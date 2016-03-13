@@ -28,7 +28,11 @@ import csv
 import datetime as dt
 import os
 
-from dlgs import *#new, data, worksession, backdate
+# from dlgs import *#new, data, worksession, backdate
+from dlgs import new
+from dlgs import data
+from dlgs import worksession
+from dlgs import backdate
 
 ################################################################################
 ################################################################################

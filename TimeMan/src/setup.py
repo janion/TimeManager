@@ -6,6 +6,7 @@ setup(windows=['time_man_7.py'])"""
 from distutils.core import setup
 import py2exe
 import matplotlib
+import glob
  
 includes = ["matplotlib", "matplotlib.backends",
             "matplotlib.backends.backend_wxagg", "numpy",  "matplotlib.ticker",
@@ -19,6 +20,8 @@ packages = []
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll',
                 'tk84.dll'
                 ]
+data_files = []
+data_files += matplotlib.get_py2exe_datafiles()
  
 setup(
     options = {"py2exe": {"compressed": 2, 
@@ -35,5 +38,10 @@ setup(
                           "custom_boot_script": '',
                          }
               },
+
+    # using zipfile to reduce number of files in dist
+    zipfile = r'lib\library.zip',
+
+    data_files = data_files,
     windows=['TimeMan.py']
 )

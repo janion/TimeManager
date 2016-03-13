@@ -35,5 +35,5 @@ setup(
                           "custom_boot_script": '',
                          }
               },
-    windows=['time_man_7.py']
+    windows=['TimeMan.py']
 )

@@ -5,6 +5,7 @@ setup(windows=['time_man_7.py'])"""
 
 from distutils.core import setup
 import py2exe
+import numpy
 from dlgs import config
 
 includes = []
@@ -14,7 +15,7 @@ if config.hasGraphs:
     import matplotlib
     includes = ["matplotlib", "matplotlib.backends",
                 "matplotlib.backends.backend_wxagg", "numpy",  "matplotlib.ticker",
-                "matplotlib.figure"#, "_wxagg"
+                "matplotlib.figure"
                 ]
     data_files += matplotlib.get_py2exe_datafiles()
     

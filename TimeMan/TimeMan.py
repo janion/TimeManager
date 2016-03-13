@@ -34,8 +34,8 @@ from dlgs import *#new, data, worksession, backdate
 ################################################################################
 
 class Window(wx.Frame):
-    def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title, size=(495, 350))
+    def __init__(self, parent, idd, title):
+        wx.Frame.__init__(self, parent, idd, title, size=(495, 350))
         self.panel = wx.Panel(self, -1)
         
         #Create buttons

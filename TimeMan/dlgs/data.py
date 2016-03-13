@@ -19,8 +19,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 class DataWindow(wx.Frame):
-    def __init__(self, parent, id, title):
-        wx.Frame.__init__(self, parent, id, title, size=(870, 470))
+    def __init__(self, parent, idd, title):
+        wx.Frame.__init__(self, parent, idd, title, size=(870, 470))
         self.panel = wx.Panel(self, -1)
         
         #Open list ctrl to house data

@@ -11,8 +11,8 @@ import csv
 import os
 
 class NewProjectDlg(wx.Dialog):
-    def __init__(self, parent, id, title):
-        wx.Dialog.__init__(self, parent, id, title, size=(250, 170))
+    def __init__(self, parent, idd, title):
+        wx.Dialog.__init__(self, parent, idd, title, size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
         

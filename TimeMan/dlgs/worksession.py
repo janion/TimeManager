@@ -11,8 +11,8 @@ import datetime as dt
 import time
 
 class WorkSessionDlg(wx.Dialog):
-    def __init__(self, parent, id, title, projects):
-        wx.Dialog.__init__(self, parent, id, title, size=(250, 140))
+    def __init__(self, parent, idd, title, projects):
+        wx.Dialog.__init__(self, parent, idd, title, size=(250, 140))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
         

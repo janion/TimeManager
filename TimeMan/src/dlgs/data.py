@@ -6,21 +6,15 @@ Created on Mon Sep 21 14:56:36 2015
 """
 
 import wx
-import matplotlib
 import csv
 import datetime as dt
 
-##########
-matplotlib.use('WXAgg')
-from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-from matplotlib.backends.backend_wx import NavigationToolbar2Wx as toolbar
-##########
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import config
 
 class DataWindow(wx.Frame):
+    
     def __init__(self, parent, idd, title):
-        wx.Frame.__init__(self, parent, idd, title, size=(870, 470))
+        wx.Frame.__init__(self, parent, idd, title, size=(270, 440))
         self.panel = wx.Panel(self, -1)
         
         #Open list ctrl to house data
@@ -49,33 +43,37 @@ class DataWindow(wx.Frame):
                 .replace(" ", "0")
                 )
 
-        #Create buttons for graph manipulation
-        self.zoom_btn = wx.ToggleButton(self.panel, -1, 'Zoom', pos=(10, 400),
-                                        size=(70, -1)
-                                        )
-        self.pan_btn = wx.ToggleButton(self.panel, -1, 'Pan', pos=(90, 400),
-                                       size=(70, -1)
-                                       )
-        self.home_btn = wx.Button(self.panel, -1, 'Reset view', pos=(170, 400),
-                                  size=(70, -1)
-                                  )
-                
-        #This is to ensure there is a sufficient border on RHS
-        buff = (self.data_list.GetPosition()[0] + 10 +
-                self.data_list.GetSize()[0]
-                )
-        wx.StaticText(self.panel, -1, "", pos=(buff, 10))
+        if config.hasGraphs:
             
-        #Make data into 2 lists:
-            #one of all dates in range
-            #one of all worked hours (including zeros)
-        self.MakeDates(days, months, years, hours, tot)
-        self.PlotData()
-        
-        #Bind events
-        self.zoom_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Zoom)
-        self.pan_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Pan)
-        self.home_btn.Bind(wx.EVT_BUTTON, self.Home)
+            self.SetSize((870, 470))
+            
+            #Create buttons for graph manipulation
+            self.zoom_btn = wx.ToggleButton(self.panel, -1, 'Zoom', pos=(10, 400),
+                                            size=(70, -1)
+                                            )
+            self.pan_btn = wx.ToggleButton(self.panel, -1, 'Pan', pos=(90, 400),
+                                           size=(70, -1)
+                                           )
+            self.home_btn = wx.Button(self.panel, -1, 'Reset view', pos=(170, 400),
+                                      size=(70, -1)
+                                      )
+                    
+            #This is to ensure there is a sufficient border on RHS
+            buff = (self.data_list.GetPosition()[0] + 10 +
+                    self.data_list.GetSize()[0]
+                    )
+            wx.StaticText(self.panel, -1, "", pos=(buff, 10))
+                
+            #Make data into 2 lists:
+                #one of all dates in range
+                #one of all worked hours (including zeros)
+            self.MakeDates(days, months, years, hours, tot)
+            self.PlotData()
+            
+            #Bind events
+            self.zoom_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Zoom)
+            self.pan_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Pan)
+            self.home_btn.Bind(wx.EVT_BUTTON, self.Home)
 
 ################################################################################
     
@@ -99,11 +97,6 @@ class DataWindow(wx.Frame):
                     pass #Skip erroneous entries
         
         return (days, months, years, hours, tot)
-
-################################################################################
-
-    def Home(self, event): #Reset graph view
-        self.toolbar.home()
 
 ################################################################################
     
@@ -138,15 +131,40 @@ class DataWindow(wx.Frame):
 
 ################################################################################
 
+    def Home(self, event): #Reset graph view
+        self.toolbar.home()
+
+################################################################################
+
     def Pan(self, event): #Enable panning and disable zoom button
         self.toolbar.pan()
         if self.zoom_btn.GetValue() == True:
             self.zoom_btn.SetValue(False)
 
 ################################################################################
+
+    def Zoom(self, event): #Enable zooming and deslect the pan button
+        self.toolbar.zoom()
+        if self.pan_btn.GetValue() == True:
+            self.pan_btn.SetValue(False)
+
+################################################################################
     
     def PlotData(self): #Create graph object and embed it and the panel into
     #the dialog
+    
+    
+        import matplotlib
+        ##########
+        matplotlib.use('WXAgg')
+        from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
+        from matplotlib.backends.backend_wx import NavigationToolbar2Wx as toolbar
+        ##########
+        import matplotlib.pyplot as plt
+        import matplotlib.dates as mdates
+    
+    
+    
         #Create figure
         self.figure = plt.Figure()
         self.canvas = FigureCanvas(self, -1, self.figure)
@@ -166,12 +184,5 @@ class DataWindow(wx.Frame):
         self.Sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.Sizer.Add(self.panel, 0, wx.EXPAND)
         self.Sizer.Add(self.canvas, 0, wx.EXPAND, 8)
-
-################################################################################
-
-    def Zoom(self, event): #Enable zooming and deslect the pan button
-        self.toolbar.zoom()
-        if self.pan_btn.GetValue() == True:
-            self.pan_btn.SetValue(False)
         
         

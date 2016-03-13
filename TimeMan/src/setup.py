@@ -25,7 +25,7 @@ data_files += matplotlib.get_py2exe_datafiles()
  
 setup(
     options = {"py2exe": {"compressed": 2, 
-                          "optimize": 1,
+                          "optimize": 2,
                           "includes": includes,
                           "excludes": excludes,
                           "packages": packages,

@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/TimeMan.py=utf-8
+encoding//src/dlgs/__init__.py=utf-8
 encoding//src/dlgs/backdate.py=utf-8
 encoding//src/dlgs/data.py=utf-8
 encoding//src/dlgs/new.py=utf-8

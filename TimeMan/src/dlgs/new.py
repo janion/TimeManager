@@ -11,10 +11,12 @@ import csv
 import os
 
 class NewProjectDlg(wx.Dialog):
-    def __init__(self, parent, idd, title):
-        wx.Dialog.__init__(self, parent, idd, title, size=(250, 170))
+    def __init__(self, parent, idd, logic):
+        wx.Dialog.__init__(self, parent, idd, 'New Project', size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
+        
+        self.logic = logic
         
         #Create instructional text and a text box to enter the project name
         wx.StaticText(self.panel, -1, "Please enter the name of the project:",
@@ -69,7 +71,7 @@ class NewProjectDlg(wx.Dialog):
 ################################################################################
 
     def SaveProject(self, event): #Create project file if name is unique
-        if self.proj_name.GetValue() not in self.parent.projects:
+        if self.proj_name.GetValue() not in self.logic.getProjectNames():
             #If project name is unique
         
             #Get project name, number of hours entered and start date
@@ -88,23 +90,15 @@ class NewProjectDlg(wx.Dialog):
             today = dt.date.today().strftime("%d-%m-%Y").split('-')
             today = [int(today[0]), int(today[1]), int(today[2])]
                 
+            #Check date is today or earlier
             if ((date[2] < today[2]) or
                 (date[2] == today[2] and date[1] < today[1]) or
                 (date[2] == today[2] and date[1] == today[1] and
                  date[0] <= today[0])
                 ):
-                    #Check date is today or earlier
-                                      
-                    #Create csv file for project
-                    with open('Project_man_%s.csv' %name, 'wb') as csvfile:
-                        w1 = csv.writer(csvfile, delimiter=',')
-                        w1.writerow(date + ['%f' %work_time])
-                    #Make file hidden
-                    os.popen('attrib +h Project_man_%s.csv' %name)
-                    #Add to list of projects
-                    self.parent.projects.append(name)
+                    self.logic.createNewProjectFile(name, date, work_time)
                     #Add to list ctrl on main window
-                    self.parent.GetProjectInfo(name)
+                    self.parent.getProjectInfo(name)
                     self.Destroy()
             else:
                 #Inform user of invalid date

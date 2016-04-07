@@ -28,11 +28,11 @@ import csv
 import datetime as dt
 import os
 
-# from dlgs import *#new, data, worksession, backdate
 from dlgs import new
 from dlgs import data
 from dlgs import worksession
 from dlgs import backdate
+from Logic import Logic
 
 ################################################################################
 ################################################################################
@@ -42,22 +42,13 @@ class Window(wx.Frame):
         wx.Frame.__init__(self, parent, idd, title, size=(495, 350))
         self.panel = wx.Panel(self, -1)
         
-        #Create buttons
-        self.new_btn = wx.Button(self.panel, -1, 'New project', pos=(10, 10))
-        self.del_btn = wx.Button(self.panel, -1, 'Close project', pos=(100, 10))
-        self.backdate_btn = wx.Button(self.panel, -1, 'Back date', pos=(190, 10)
-                                      )
-        self.start_btn = wx.Button(self.panel, -1, 'Start work', pos=(280, 10))
-        self.data_btn = wx.Button(self.panel, -1, 'View data', pos=(370, 10))
-        self.data_btn.Enable(False)
-        
-        #Get project names
-        self.GetProjects()
+        self.logic = Logic()
         
         #Create list control to show projects
-        self.proj_list = wx.ListCtrl(self.panel, -1, pos=(10, 40),
-                                     size=(455, 260), style=wx.LC_REPORT
+        self.proj_list = wx.ListCtrl(self.panel, -1, pos=(10, 10),
+                                     size=(455, 270), style=wx.LC_REPORT
                                      )
+
         #Add columns
         self.proj_list.InsertColumn(0, "Project", width=110)
         self.proj_list.InsertColumn(1, "Total hours", width=80)
@@ -66,33 +57,57 @@ class Window(wx.Frame):
         self.proj_list.InsertColumn(4, "Duration (days)", width=95)
 
         #Get information about each project and add to list ctrl
-        for item in self.projects:
-            self.GetProjectInfo(item)
+        for item in self.logic.getProjectNames():
+            self.getProjectInfo(item)
+            
+        self.setupMenu()
+            
+################################################################################
+            
+    def setupMenu(self):
+        self.menuBar = wx.MenuBar()
         
-        #Bind events
-        self.Bind(wx.EVT_BUTTON, self.NewProject, self.new_btn)
-        self.Bind(wx.EVT_BUTTON, self.DelProject, self.del_btn)
-        self.Bind(wx.EVT_BUTTON, self.BackDate, self.backdate_btn)
-        self.Bind(wx.EVT_BUTTON, self.StartWork, self.start_btn)
-        self.Bind(wx.EVT_LIST_ITEM_SELECTED, self.OnSelection, self.proj_list)
-        self.Bind(wx.EVT_LIST_ITEM_DESELECTED, self.OnDeselection,
-                  self.proj_list
-                  )
-        self.Bind(wx.EVT_BUTTON, self.OpenData, self.data_btn)
+        menu1 = wx.Menu()
+        menu1.Append(101, "New project")
+        menu1.Append(102, "Close Project")
+        menu1.AppendSeparator()
+        menu1.Append(103, "Quit")
+        self.menuBar.Append(menu1, "File")
+        
+        menu2 = wx.Menu()
+        menu2.Append(201, "Backdate")
+        menu2.Append(202, "Start work session")
+        menu2.AppendSeparator()
+        menu2.Append(203, "View data")
+        self.menuBar.Append(menu2, "Project")
+        
+        self.SetMenuBar(self.menuBar)
+        
+        self.Bind(wx.EVT_MENU, self.newProject, id=101)
+        self.Bind(wx.EVT_MENU, self.closeProject, id=102)
+        self.Bind(wx.EVT_MENU, self.close, id=103)
+        self.Bind(wx.EVT_MENU, self.backDate, id=201)
+        self.Bind(wx.EVT_MENU, self.startWork, id=202)
+        self.Bind(wx.EVT_MENU, self.openData, id=203)
         
 ################################################################################
         
-    def BackDate(self, event): #Add time entries without real time recording
+    def close(self, event):
+        self.Destroy()
+        
+################################################################################
+        
+    def backDate(self, event): #Add time entries without real time recording
         #Open backdating dialog
-        dlg = backdate.BackDateDlg(self, -1, 'Back date project', self.projects)
+        dlg = backdate.BackDateDlg(self, -1, self.logic)
         dlg.ShowModal()
         
 ################################################################################
     
-    def DelProject(self, event): #Remove a project from the program
+    def closeProject(self, event): #Remove a project from the program
         #Open up selection dialog
         dlg = wx.SingleChoiceDialog(self, 'Select a project to be deleted',
-                                    'Delete project', self.projects,
+                                    'Delete project', self.logic.getProjectNames(),
                                     wx.CHOICEDLG_STYLE
                                     )
 
@@ -104,10 +119,7 @@ class Window(wx.Frame):
                                     wx.NO_DEFAULT
                                     )
             if dlg2.ShowModal() == wx.ID_YES:
-                #Delete file
-                os.remove('Project_man_%s.csv' %name)
-                #Remove from list of projects
-                self.projects.remove(name)
+                self.logic.deleteProject(name)
                 #Remove from listctrl
                 self.proj_list.DeleteItem(self.proj_list.FindItem(-1, name))
                 #Confirm to user successful deletion
@@ -122,38 +134,14 @@ class Window(wx.Frame):
         
 ################################################################################
         
-    def GetProjectInfo(self, item): #Find the relevant data from .csv files
-        #Look in the csv file
-        with open('Project_man_%s.csv' %item, 'rb') as csvfile:
-            r1 = csv.reader(csvfile, delimiter=',')
-                
-            #Get current date
-            now = dt.date.today()
-                
-            #Iterate over entries to find total hours put into project
-            tot = 0. #Total hours
-            this_week = 0. #Total hours in last 7 days
-            proj_start = None #Empty variable
-            for row in r1:
-                if proj_start == None: #First line only
-                    #Find start date
-                    proj_start = dt.date(int(row[2]), int(row[1]), int(row[0]))
-                    #Calculate days since project start
-                    tot_days = (now - proj_start).days
-                try:
-                    tot += float(row[3]) #Add hours for each day to total
-                        
-                    entry = row[0:3] #Get date in list form
-                    #Convert to date format
-                    entry_date = dt.date(int(entry[2]), int(entry[1]),
-                                         int(entry[0])
-                                         )
-                    if (now - entry_date).days < 7: #Add to week's total
-                        this_week += float(row[3])
-                except:
-                    #If entry doesn't contain valid info, skip it
-                    pass
-        
+    def getProjectInfo(self, item): #Find the relevant data from .csv files
+        # Get project information
+        projInfo = self.logic.getProjectInfo(item)
+        tot = projInfo.getTotalTime()
+        this_week = projInfo.getThisWeek()
+        proj_start = projInfo.getProjStart()
+        tot_days = projInfo.getTotalDays()
+         
         #Change total times from decimal hours to time format
         tot_f = "%d:%2d" %(int(tot), int(round((tot % 1) * 60)))
         tot_f = tot_f.replace(" ", "0")
@@ -161,65 +149,42 @@ class Window(wx.Frame):
                                  int(round((this_week % 1) * 60))
                                  )
         this_week_f = this_week_f.replace(" ", "0")
-            
+        
+        # Update table to show project
         if self.proj_list.FindItem(-1,item) == -1:
             #If project is not currently in the list ctrl then create an entry
             index = self.proj_list.GetItemCount()
             self.proj_list.InsertStringItem(index, item)
             #Then populate that list item
-            self.PopulateList(item, tot_f, this_week_f,
+            self.populateList(item, tot_f, this_week_f,
                               proj_start.strftime("%d-%m-%Y"), str(tot_days),
                               index
                               )
         else:
             #Else overwrite current entry
-            self.PopulateList(item, tot_f, this_week_f,
+            self.populateList(item, tot_f, this_week_f,
                               proj_start.strftime("%d-%m-%Y"), str(tot_days),
                               self.proj_list.FindItem(-1, item)
                               )
-                              
-################################################################################
-        
-    def GetProjects(self): #Find all projects in home folder
-        #Create list
-        self.projects = []
-        for item in os.listdir(os.getcwd()):
-            #Look for project files in directory
-            if ('Project_man_' in item and '.csv' in item):
-                #Find project name in file name
-                self.projects.append(item[12:-4])
                 
 ################################################################################
         
-    def NewProject(self, event): #Create new project
+    def newProject(self, event): #Create new project
         #Open new project dialog
-        dlg = new.NewProjectDlg(self, -1, 'New Project')
+        dlg = new.NewProjectDlg(self, -1, self.logic)
         dlg.ShowModal()
         dlg.Destroy()
-
-################################################################################
-        
-    def OnDeselection(self, event): #Disable data from being viewed
-        self.data_btn.Enable(False)
         
 ################################################################################
         
-    def OnSelection(self, event): #Enable data to be viewed
-        self.data_btn.Enable(True)
-        self.current_item = event.m_itemIndex
-        
-################################################################################
-        
-    def OpenData(self, event): #Show user data for the selected project
+    def openData(self, event): #Show user data for the selected project
         #Open data dialog
-        data_window = data.DataWindow(
-            self, -1, self.proj_list.GetItemText(self.current_item)
-            )
+        data_window = data.DataWindow(self, -1, self.logic)
         data_window.Show()
 
 ################################################################################
             
-    def PopulateList(self, proj, tot, this_week, start, tot_days, index):
+    def populateList(self, proj, tot, this_week, start, tot_days, index):
         #Add data to given list ctrl entry
         self.proj_list.SetStringItem(index, 1, tot)
         self.proj_list.SetStringItem(index, 2, this_week)
@@ -228,9 +193,9 @@ class Window(wx.Frame):
         
 ################################################################################
         
-    def StartWork(self, event): #Allow user to record a work session
+    def startWork(self, event): #Allow user to record a work session
         #Open work session dialog
-        dlg = worksession.WorkSessionDlg(self, -1, 'Work session', self.projects)
+        dlg = worksession.WorkSessionDlg(self, -1, self.logic)
         dlg.ShowModal()
         
 ################################################################################

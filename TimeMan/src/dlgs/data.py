@@ -13,13 +13,23 @@ import config
 
 class DataWindow(wx.Frame):
     
-    def __init__(self, parent, idd, title):
-        wx.Frame.__init__(self, parent, idd, title, size=(270, 440))
+    def __init__(self, parent, idd, logic):        
+        wx.Frame.__init__(self, parent, idd, "View data", size=(270, 440))
         self.panel = wx.Panel(self, -1)
         
+        self.logic = logic
+        
+        #Create text and choice box for the project to work on
+        wx.StaticText(self.panel, -1, "Please select the project to view:",
+                      (10, 10)
+                      )
+        self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(230, -1),
+                                     choices=self.logic.getProjectNames()
+                                     )
+        
         #Open list ctrl to house data
-        self.data_list = wx.ListCtrl(self.panel, -1, pos=(10, 10),
-                                     size=(230, 380), style=wx.LC_REPORT
+        self.data_list = wx.ListCtrl(self.panel, -1, pos=(10, 60),
+                                     size=(230, 330), style=wx.LC_REPORT
                                      )
 
         #Add columns
@@ -27,11 +37,18 @@ class DataWindow(wx.Frame):
         self.data_list.InsertColumn(1, "hours", width=60)
         self.data_list.InsertColumn(2, "Total hours", width=90)
         
+        #Bind events
+        self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
+
+################################################################################
+    
+    def populateTable(self, event): #Extract data from .csv file
+        self.data_list.DeleteAllItems()
         
-        (days, months, years, hours, tot) = self.GetData(title)
+        (days, months, years, hours, tot) = self.logic.getData(self.proj_choice.GetStringSelection())
         
         for x in xrange(len(days)):
-            self.data_list.InsertStringItem(x, '%d/%d/%d'
+            self.data_list.InsertStringItem(x, '%02d/%02d/%4d'
                                             %(days[x], months[x], years[x])
                                             )
             self.data_list.SetStringItem(
@@ -42,6 +59,8 @@ class DataWindow(wx.Frame):
                 x, 2, ("%d:%2d" %(int(tot[x]), int(round((tot[x]%1)*60))))
                 .replace(" ", "0")
                 )
+        
+        self.data_list.SetFocus()
 
         if config.hasGraphs:
             
@@ -68,66 +87,13 @@ class DataWindow(wx.Frame):
                 #one of all dates in range
                 #one of all worked hours (including zeros)
             self.MakeDates(days, months, years, hours, tot)
+            (self.dates, self.wk_hrs) = self.logic.makeDates()
             self.PlotData()
             
             #Bind events
             self.zoom_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Zoom)
             self.pan_btn.Bind(wx.EVT_TOGGLEBUTTON, self.Pan)
             self.home_btn.Bind(wx.EVT_BUTTON, self.Home)
-
-################################################################################
-    
-    def GetData(self, filename): #Extract data from .csv file
-        with open('Project_man_%s.csv' %filename, 'rb') as csvfile:
-            r1 = csv.reader(csvfile, delimiter=',')
-            
-            #Declare empty lists
-            (days, months, years, hours, tot) = ([], [], [], [], [])
-            for row in r1:
-                try: #Append data to lists
-                    hours.append(float(row[3]))
-                    days.append(int(row[0]))
-                    months.append(int(row[1]))
-                    years.append(int(row[2]))
-                    try:
-                        tot.append(tot[-1] + float(row[3]))
-                    except:
-                        tot.append(float(row[3]))
-                except:
-                    pass #Skip erroneous entries
-        
-        return (days, months, years, hours, tot)
-
-################################################################################
-    
-    def MakeDates(self, days, months, years, hours, tot): #Make list of dates
-    #in range as well as a list of the hours worked on each day.
-            
-        self.dates = []
-        self.wk_hrs = []
-        count = 0
-
-        for year in xrange(min(years), dt.date.today().year + 1):
-            #For years in range
-            for month in xrange(1, 13): #For month in each year
-                for day in xrange(1, 32): #For day in each month
-                    
-                    #Provided that the dates are within the range of start to end months
-                    if not ((year == years[0] and month < months[0]) or
-                            (year == years[-1] and month > months[-1])
-                            ):
-                    
-                        if (day,month,year) not in zip(days, months, years):
-                            try: #Add date with zero hours if not recorded
-                                self.dates.append(dt.date(year, month, day))
-                                self.wk_hrs.append(0.0)
-                            except:#Skip dates which do not exist
-                                pass
-                        else: #Add hours worked if date is recorded
-                            self.dates.append(dt.date(year, month, day))
-                            self.wk_hrs.append(hours[count])
-                            count += 1
-                            #zip(days, months, years).index((day, month, year))
 
 ################################################################################
 

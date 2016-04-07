@@ -11,17 +11,19 @@ import datetime as dt
 import time
 
 class WorkSessionDlg(wx.Dialog):
-    def __init__(self, parent, idd, title, projects):
-        wx.Dialog.__init__(self, parent, idd, title, size=(250, 140))
+    def __init__(self, parent, idd, logic):        
+        wx.Dialog.__init__(self, parent, idd, 'Work session', size=(250, 140))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
+        
+        self.logic = logic
         
         #Create text and choice box for the project to work on
         wx.StaticText(self.panel, -1, "Please select the project to work on:",
                       (10, 10)
                       )
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(225, -1),
-                                     choices=projects
+                                     choices=self.logic.getProjectNames()
                                      )
         #Create timer label
         self.timer_text = wx.StaticText(self.panel, -1,
@@ -56,50 +58,13 @@ class WorkSessionDlg(wx.Dialog):
         self.start_btn.Enable(True)
         self.stop_btn.Enable(False)
         self.timer_text.Label = 'Current work session: 00:00:00'
-        
-        #Find hours worked in decimal
-        hours_worked = round((self.end_time - self.start_time) / 3600., 2)      
-        
-        if hours_worked > 0.00: #If a non-zero amount of time has been worked
-            #Get name of project and today's date
-            name = self.proj_choice.GetStringSelection()
-            today = dt.date.today().strftime("%d-%m-%Y").split('-')
-            today = [int(today[0]), int(today[1]), int(today[2])]
-    
-            #Read csv file
-            with open('Project_man_%s.csv' %name, 'rb') as csvfile:
-                r1 = csv.reader(csvfile, delimiter=',')
-                
-                (days, months, years, hours) = ([], [], [], [])
-                #Gather data into lists
-                for row in r1:
-                    try:
-                        hours.append(float(row[3]))
-                        years.append(int(row[2]))
-                        months.append(int(row[1]))
-                        days.append(int(row[0]))
-                    except:
-                        pass #Ignore erroneous entries
+        name = self.proj_choice.GetStringSelection()
             
-            if [days[-1], months[-1], years[-1]] == today:
-                #Update last entry if it has today's date
-                hours[-1] += hours_worked
-            else:
-                #Else make a new entry on the end
-                days.append(today[0])
-                months.append(today[1])
-                years.append(today[2])
-                hours.append(hours_worked)
-                
-            #Write to csv file
-            with open('Project_man_%s.csv' %name, 'rb+') as csvfile:
-                csvfile.truncate() #Part of the bodge a few lines above
-                w1 = csv.writer(csvfile, delimiter=',')
-                for x in xrange(len(hours)):
-                    w1.writerow([days[x], months[x], years[x], hours[x]])
+        self.logic.recordSession(self.start_time, self.end_time, name)
                     
-            #Update list ctrl in main window
-            self.parent.GetProjectInfo(name)
+        #Update list ctrl in main window
+        if self.end_time != self.start_time:
+            self.parent.getProjectInfo(name)
 
 ################################################################################
 

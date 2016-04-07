@@ -5,13 +5,18 @@ Created on Mon Sep 21 14:59:28 2015
 @author: erik_
 """
 
+# Need InsertBackDate() method factoring into logic
+
 import wx
 import csv
 import datetime as dt
 
 class BackDateDlg(wx.Dialog):
-    def __init__(self, parent, idd, title, projects):
-        wx.Dialog.__init__(self, parent, idd, title, size=(250, 170))
+    def __init__(self, parent, idd, logic):
+        
+        self.logic = logic
+        
+        wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
         
@@ -20,7 +25,7 @@ class BackDateDlg(wx.Dialog):
                       "Please select the project to back date:", (10, 10)
                       )
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(225, -1),
-                                     choices=projects
+                                     choices=self.logic.getProjectNames()
                                      )
         #Create text and date picker
         wx.StaticText(self.panel, -1, "Select date:", (10, 60))
@@ -61,60 +66,19 @@ class BackDateDlg(wx.Dialog):
         date[1] = int(date[0])
         date[0] = temp
         
-        #Find today's date
-        today = dt.date.today().strftime("%d-%m-%Y").split('-')
-        today = [int(today[0]), int(today[1]), int(today[2])]
-            
-        #Check date is today or earlier
-        if ((date[2] < today[2]) or
-            (date[2] == today[2] and date[1] < today[1]) or
-            (date[2] == today[2] and date[1] == today[1] and
-             date[0] <= today[0])
-            ):
-            #Get project name
-            name = self.proj_choice.GetStringSelection()
-            #get data from the csv file
-            (days, months, years, hours) = self.ReadFile(name)
-            
-            #Cehck if the backdate is earlier than all other entries
-            if ((date[2] < years[0]) or
-                (date[2] == years[0] and date[1] < months[0]) or
-                (date[2] == years[0] and date[1] == months[0] and
-                 date[0] < days[0])
-                ):
-                (minn, maxx) = (-1, 0)
-            else:
-                minn = -1
-                maxx = len(years)
-                #Find range of year
-                for x in xrange(len(years)):
-                    if years[x] < date[2]:
-                        minn = x
-                    if years[x] > date[2]:
-                        maxx = x
-                        break
-                    
-                #Find range of months
-                for x in xrange(minn + 1, maxx):
-                    if months[x] < date[1]:
-                        minn = x
-                    if months[x] > date[1]:
-                        maxx = x
-                        break
-                    
-                #Find range of days
-                for x in xrange(minn + 1, maxx):
-                    if days[x] < date[0]:
-                        minn = x
-                    if days[x] > date[0]:
-                        maxx = x
-                        break
-            
+        #Get project name
+        name = self.proj_choice.GetStringSelection()
+        # Get backdate data
+        result = self.logic.backdate(date, name)
+
+        if result[0]: #Tell user that date choice is invalid
+            data = result[1]
+            extent = result[2]
             #Write date to the file
-            self.InsertBackDate(name, date, days, months, years, hours, maxx,
-                                maxx - minn
+            self.InsertBackDate(name, date, data[0], data[1], data[2], data[3], extent[0],
+                                extent[1]
                                 )
-        else: #Tell user that date choice is invalid
+        else:
             dlg = wx.MessageDialog(self,
                                    'Please choose a date today or earlier.',
                                    'Invalid date selection', wx.OK
@@ -189,7 +153,7 @@ class BackDateDlg(wx.Dialog):
                         w1.writerow([days[x], mths[x], yrs[x], hrs[x]])
                 
                 #Update the list ctrl in main window
-                self.parent.GetProjectInfo(name)
+                self.parent.getProjectInfo(name)
                 #Tell user of success
                 dlg2 = wx.MessageDialog(self,'Successfully backdated: %s'
                                         %name, 'Back date successful',
@@ -209,22 +173,3 @@ class BackDateDlg(wx.Dialog):
     def ProjectSelected(self, event): #Enable backdate button
         self.log_btn.Enable(True)
         
-################################################################################
-
-    def ReadFile(self, name): #Find all the entries in a file
-        with open('Project_man_%s.csv' %name, 'rb') as csvfile:
-            r1 = csv.reader(csvfile, delimiter=',')
-            
-            #Declare empty lists
-            (days, months, years, hours) = ([], [], [], [])
-            #Find the dates and hours worked
-            for row in r1:
-                try:
-                    hours.append(float(row[3]))
-                    years.append(int(row[2]))
-                    months.append(int(row[1]))
-                    days.append(int(row[0]))
-                except:
-                    pass #Skip an erroneous entry
-            
-        return (days, months, years, hours)

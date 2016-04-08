@@ -43,14 +43,15 @@ setup(
               },
 
     # using zipfile to reduce number of files in dist
-    zipfile = r'lib\library.zip',
+    zipfile = 'lib\\library.zip',
 
     data_files = data_files,
     windows=['%s.py' %baseName]
 )
 
-exeFormat = 'dist/%s.exe'
+exeFormat = 'dist\\%s.exe'
 os.rename(exeFormat %baseName, exeFormat %'TimeManager')
+os.mkdir('dist\\data')
 
 # shutil.copytree("data", "dist\\data")
 # for item in os.listdir("dist\\data"):

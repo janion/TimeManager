@@ -3,6 +3,7 @@ import py2exe
 import numpy
 from dlgs import Config
 import os
+import shutil
 
 baseName = 'Launcher'
 includes = []
@@ -37,7 +38,7 @@ setup(
                           "xref": False,
                           "skip_archive": False,
                           "ascii": False,
-                          "custom_boot_script": '',
+                          "custom_boot_script": ''
                          }
               },
 
@@ -50,3 +51,7 @@ setup(
 
 exeFormat = 'dist/%s.exe'
 os.rename(exeFormat %baseName, exeFormat %'TimeManager')
+
+# shutil.copytree("data", "dist\\data")
+# for item in os.listdir("dist\\data"):
+#     os.popen('attrib +h dist\\data\\%s' %item)

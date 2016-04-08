@@ -11,6 +11,7 @@ from ProjectInfo import ProjectInfo
 
 class Logic():
     
+    fileLocation = 'data\\'
     fileStart = 'Project_man_'
     fileEnd = '.csv'
     projects = []
@@ -30,7 +31,7 @@ class Logic():
     
     def findProjects(self): #Find all projects in home folder
         #Create list
-        for item in os.listdir(os.getcwd()):
+        for item in os.listdir(os.getcwd() + "\\" + self.fileLocation):
             #Look for project files in directory
             if (item.startswith(self.fileStart) and item.endswith(self.fileEnd)):
                 #Find project name in file name
@@ -40,7 +41,7 @@ class Logic():
         
     def deleteProject(self, projectName): #Find the relevant data from .csv files
         #Delete file
-        os.remove('%s%s%s' %(self.fileStart, projectName, self.fileEnd))
+        os.remove('%s\\%s%s%s' %(self.fileLocation, self.fileStart, projectName, self.fileEnd))
         #Remove from list of projects
         self.projects.remove(projectName)
         
@@ -48,7 +49,7 @@ class Logic():
         
     def getProjectInfo(self, item): #Find the relevant data from .csv files
         #Look in the csv file
-        with open('%s%s%s' %(self.fileStart, item, self.fileEnd), 'rb') as csvfile:
+        with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, item, self.fileEnd), 'rb') as csvfile:
             r1 = csv.reader(csvfile, delimiter=',')
                 
             #Get current date
@@ -83,7 +84,7 @@ class Logic():
 ################################################################################
     
     def getData(self, filename): #Extract data from .csv file
-        with open('%s%s%s' %(self.fileStart, filename, self.fileEnd), 'rb') as csvfile:
+        with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, filename, self.fileEnd), 'rb') as csvfile:
             r1 = csv.reader(csvfile, delimiter=',')
             
             #Declare empty lists
@@ -138,7 +139,7 @@ class Logic():
 ################################################################################
 
     def readFile(self, name): #Find all the entries in a file
-        with open('%s%s%s' %(self.fileStart, name, self.fileEnd), 'rb') as csvfile:
+        with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb') as csvfile:
             r1 = csv.reader(csvfile, delimiter=',')
             
             #Declare empty lists
@@ -222,7 +223,7 @@ class Logic():
             today = [int(today[0]), int(today[1]), int(today[2])]
     
             #Read csv file
-            with open('%s%s%s' %(self.fileStart, name, self.fileEnd), 'rb') as csvfile:
+            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb') as csvfile:
                 r1 = csv.reader(csvfile, delimiter=',')
                 
                 (days, months, years, hours) = ([], [], [], [])
@@ -247,7 +248,7 @@ class Logic():
                 hours.append(hours_worked)
                 
             #Write to csv file
-            with open('%s%s%s' %(self.fileStart, name, self.fileEnd), 'rb+') as csvfile:
+            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb+') as csvfile:
                 csvfile.truncate() #Part of the bodge a few lines above
                 w1 = csv.writer(csvfile, delimiter=',')
                 for x in xrange(len(hours)):
@@ -257,7 +258,7 @@ class Logic():
 
     def createNewProjectFile(self, name, date, workTime): #Find all the entries in a file
             #Create csv file for project
-            with open('%s%s%s' %(self.fileStart, name, self.fileEnd), 'wb') as csvfile:
+            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'wb') as csvfile:
                 w1 = csv.writer(csvfile, delimiter=',')
                 w1.writerow(date + ['%f' %workTime])
             #Make file hidden

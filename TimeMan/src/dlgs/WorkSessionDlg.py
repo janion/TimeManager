@@ -6,8 +6,6 @@ Created on Mon Sep 21 15:00:48 2015
 """
 
 import wx
-import csv
-import datetime as dt
 import time
 
 class WorkSessionDlg(wx.Dialog):

@@ -7,8 +7,6 @@ Created on Mon Sep 21 15:02:44 2015
 
 import wx
 import datetime as dt
-import csv
-import os
 
 class NewProjectDlg(wx.Dialog):
     def __init__(self, parent, idd, logic):

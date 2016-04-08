@@ -9,9 +9,8 @@ Created on Mon Sep 21 14:59:28 2015
 
 import wx
 import csv
-import datetime as dt
 
-class BackDateDlg(wx.Dialog):
+class BackdateDlg(wx.Dialog):
     def __init__(self, parent, idd, logic):
         
         self.logic = logic

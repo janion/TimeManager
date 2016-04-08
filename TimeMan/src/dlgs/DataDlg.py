@@ -6,10 +6,8 @@ Created on Mon Sep 21 14:56:36 2015
 """
 
 import wx
-import csv
-import datetime as dt
 
-import config
+import Config
 
 class DataWindow(wx.Frame):
     
@@ -62,7 +60,7 @@ class DataWindow(wx.Frame):
         
         self.data_list.SetFocus()
 
-        if config.hasGraphs:
+        if Config.hasGraphs:
             
             self.SetSize((870, 470))
             

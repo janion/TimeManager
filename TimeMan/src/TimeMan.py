@@ -24,15 +24,12 @@ charts with amounts done per day
 """
 
 import wx
-import csv
-import datetime as dt
-import os
 
-from dlgs import new
-from dlgs import data
-from dlgs import worksession
-from dlgs import backdate
-from Logic import Logic
+from dlgs.NewProjectDlg import NewProjectDlg
+from dlgs.DataDlg import DataWindow
+from dlgs.WorkSessionDlg import WorkSessionDlg
+from dlgs.BackdateDlg import BackdateDlg
+from processing.Logic import Logic
 
 ################################################################################
 ################################################################################
@@ -99,7 +96,7 @@ class Window(wx.Frame):
         
     def backDate(self, event): #Add time entries without real time recording
         #Open backdating dialog
-        dlg = backdate.BackDateDlg(self, -1, self.logic)
+        dlg = BackdateDlg(self, -1, self.logic)
         dlg.ShowModal()
         
 ################################################################################
@@ -171,7 +168,7 @@ class Window(wx.Frame):
         
     def newProject(self, event): #Create new project
         #Open new project dialog
-        dlg = new.NewProjectDlg(self, -1, self.logic)
+        dlg = NewProjectDlg(self, -1, self.logic)
         dlg.ShowModal()
         dlg.Destroy()
         
@@ -179,7 +176,7 @@ class Window(wx.Frame):
         
     def openData(self, event): #Show user data for the selected project
         #Open data dialog
-        data_window = data.DataWindow(self, -1, self.logic)
+        data_window = DataWindow(self, -1, self.logic)
         data_window.Show()
 
 ################################################################################
@@ -195,7 +192,7 @@ class Window(wx.Frame):
         
     def startWork(self, event): #Allow user to record a work session
         #Open work session dialog
-        dlg = worksession.WorkSessionDlg(self, -1, self.logic)
+        dlg = WorkSessionDlg(self, -1, self.logic)
         dlg.ShowModal()
         
 ################################################################################

@@ -266,7 +266,5 @@ class Logic():
             with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'wb') as csvfile:
                 w1 = csv.writer(csvfile, delimiter=',')
                 w1.writerow(date + ['%f' %workTime])
-            #Make file hidden
-            os.popen('attrib +h %s%s%s' %(self.fileStart, name, self.fileEnd))
             self.projects.append(name)
             

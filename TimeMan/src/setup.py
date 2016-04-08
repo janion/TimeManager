@@ -1,12 +1,12 @@
 from distutils.core import setup
 import py2exe
 import numpy
-from dlgs import config
+from dlgs import Config
 
 includes = []
 data_files = []
 
-if config.hasGraphs:
+if Config.hasGraphs:
     import matplotlib
     includes = ["matplotlib", "matplotlib.backends",
                 "matplotlib.backends.backend_wxagg", "numpy",  "matplotlib.ticker",

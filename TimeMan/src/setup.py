@@ -23,7 +23,7 @@ excludes = ['_gtkagg', '_tkagg', 'bsddb', 'curses', 'email', 'pywin.debugger',
             ]
 packages = []
 dll_excludes = ['libgdk-win32-2.0-0.dll', 'libgobject-2.0-0.dll', 'tcl84.dll',
-                'tk84.dll'
+                'tk84.dll', 'w9xpopen.exe'
                 ]
  
 setup(

@@ -1,8 +1,3 @@
-"""from distutils.core import setup
-import py2exe
- 
-setup(windows=['time_man_7.py'])"""
-
 from distutils.core import setup
 import py2exe
 import numpy
@@ -41,6 +36,7 @@ setup(
                           "skip_archive": False,
                           "ascii": False,
                           "custom_boot_script": '',
+                          "dest_base": "TimeManager"
                          }
               },
 
@@ -48,5 +44,5 @@ setup(
     zipfile = r'lib\library.zip',
 
     data_files = data_files,
-    windows=['TimeMan.py']
+    windows=['Launcher.py']
 )

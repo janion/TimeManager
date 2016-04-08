@@ -246,7 +246,12 @@ class Logic():
                 months.append(today[1])
                 years.append(today[2])
                 hours.append(hours_worked)
-                
+            
+            self.writeDataToFile(name, days, months, years, hours)
+            
+################################################################################
+
+    def writeDataToFile(self, name, days, months, years, hours):
             #Write to csv file
             with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb+') as csvfile:
                 csvfile.truncate() #Part of the bodge a few lines above

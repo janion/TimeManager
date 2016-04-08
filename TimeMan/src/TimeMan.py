@@ -194,14 +194,3 @@ class Window(wx.Frame):
         #Open work session dialog
         dlg = WorkSessionDlg(self, -1, self.logic)
         dlg.ShowModal()
-        
-################################################################################
-################################################################################
-
-
-
-if __name__ == '__main__':
-    app = wx.App()
-    fr = Window(None, -1, 'Time manager')
-    fr.Show()
-    app.MainLoop()

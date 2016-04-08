@@ -8,7 +8,6 @@ Created on Mon Sep 21 14:59:28 2015
 # Need InsertBackDate() method factoring into logic
 
 import wx
-import csv
 
 class BackdateDlg(wx.Dialog):
     def __init__(self, parent, idd, logic):
@@ -143,13 +142,7 @@ class BackdateDlg(wx.Dialog):
             
             if update == True: #If all criteria met and user happy
                 #Write data to file
-                with open('Project_man_%s.csv' %name, 'rb+') as csvfile:
-                    csvfile.truncate()
-                    w1 = csv.writer(csvfile, delimiter=',')
-                    
-                    #Write the entries
-                    for x in xrange(len(hrs)):
-                        w1.writerow([days[x], mths[x], yrs[x], hrs[x]])
+                self.logic.writeDataToFile(name, days, mths, yrs, hrs)
                 
                 #Update the list ctrl in main window
                 self.parent.getProjectInfo(name)

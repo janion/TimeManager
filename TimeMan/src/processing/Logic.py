@@ -84,25 +84,15 @@ class Logic():
 ################################################################################
     
     def getData(self, filename): #Extract data from .csv file
-        with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, filename, self.fileEnd), 'rb') as csvfile:
-            r1 = csv.reader(csvfile, delimiter=',')
-            
-            #Declare empty lists
-            (days, months, years, hours, tot) = ([], [], [], [], [])
-            for row in r1:
-                try: #Append data to lists
-                    hours.append(float(row[3]))
-                    days.append(int(row[0]))
-                    months.append(int(row[1]))
-                    years.append(int(row[2]))
-                    try:
-                        tot.append(tot[-1] + float(row[3]))
-                    except:
-                        tot.append(float(row[3]))
-                except:
-                    pass #Skip erroneous entries
+        (days, months, years, hours) = self.readFile(filename)
+        cumulative = []
+        for entry in hours:
+            if len(cumulative) > 0:
+                cumulative.append(entry + cumulative[-1])
+            else:
+                cumulative.append(entry)
         
-        return (days, months, years, hours, tot)
+        return (days, months, years, hours, cumulative)
 
 ################################################################################
     
@@ -209,11 +199,11 @@ class Logic():
             return (True, [days, months, years, hours], [maxx, maxx - minn])
         
         else:
-            return (False)
+            return (False, None, None)
             
 ################################################################################
 
-    def recordSession(self, startTime, endTime, name): #Find all the entries in a file
+    def recordSession(self, startTime, endTime, name):
         #Find hours worked in decimal
         hours_worked = round((endTime - startTime) / 3600., 2)      
         
@@ -222,20 +212,7 @@ class Logic():
             today = dt.date.today().strftime("%d-%m-%Y").split('-')
             today = [int(today[0]), int(today[1]), int(today[2])]
     
-            #Read csv file
-            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb') as csvfile:
-                r1 = csv.reader(csvfile, delimiter=',')
-                
-                (days, months, years, hours) = ([], [], [], [])
-                #Gather data into lists
-                for row in r1:
-                    try:
-                        hours.append(float(row[3]))
-                        years.append(int(row[2]))
-                        months.append(int(row[1]))
-                        days.append(int(row[0]))
-                    except:
-                        pass #Ignore erroneous entries
+            (days, months, years, hours) = self.readFile(name)
             
             if [days[-1], months[-1], years[-1]] == today:
                 #Update last entry if it has today's date
@@ -251,20 +228,17 @@ class Logic():
             
 ################################################################################
 
-    def writeDataToFile(self, name, days, months, years, hours):
-            #Write to csv file
-            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'rb+') as csvfile:
-                csvfile.truncate() #Part of the bodge a few lines above
-                w1 = csv.writer(csvfile, delimiter=',')
-                for x in xrange(len(hours)):
-                    w1.writerow([days[x], months[x], years[x], hours[x]])
+    def writeDataToFile(self, name, days, months, years, hours, mode='rb+'):
+        #Write to csv file
+        with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), mode) as csvfile:
+            csvfile.truncate() #Part of the bodge a few lines above
+            w1 = csv.writer(csvfile, delimiter=',')
+            for x in xrange(len(hours)):
+                w1.writerow([days[x], months[x], years[x], hours[x]])
             
 ################################################################################
 
-    def createNewProjectFile(self, name, date, workTime): #Find all the entries in a file
-            #Create csv file for project
-            with open('%s\\%s%s%s' %(self.fileLocation, self.fileStart, name, self.fileEnd), 'wb') as csvfile:
-                w1 = csv.writer(csvfile, delimiter=',')
-                w1.writerow(date + ['%f' %workTime])
-            self.projects.append(name)
+    def createNewProjectFile(self, name, date, workTime):
+        self.writeDataToFile(name, [date[0]], [date[1]], [date[2]], [workTime], 'wb')
+        self.projects.append(name)
             

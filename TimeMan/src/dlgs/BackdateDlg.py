@@ -90,7 +90,7 @@ class BackdateDlg(wx.Dialog):
             
 ################################################################################
 
-    def InsertBackDate(self, name, date, days, mths, yrs, hrs,index, delta):
+    def InsertBackDate(self, name, date, days, mths, yrs, hrs, index, delta):
         #Write data to file
     
         #Get hours to be backdated

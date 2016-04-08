@@ -1,0 +1,3 @@
+Make table in main window resizable
+make table in data window resizable
+Finish tests

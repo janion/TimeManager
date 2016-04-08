@@ -43,7 +43,7 @@ class DataWindow(wx.Frame):
     def populateTable(self, event): #Extract data from .csv file
         self.data_list.DeleteAllItems()
         
-        (days, months, years, hours, tot) = self.logic.getData(self.proj_choice.GetStringSelection())
+        (days, months, years, hours, cumulative) = self.logic.getData(self.proj_choice.GetStringSelection())
         
         for x in xrange(len(days)):
             self.data_list.InsertStringItem(x, '%02d/%02d/%4d'
@@ -54,7 +54,7 @@ class DataWindow(wx.Frame):
                 .replace(" ", "0")
                 )
             self.data_list.SetStringItem(
-                x, 2, ("%d:%2d" %(int(tot[x]), int(round((tot[x]%1)*60))))
+                x, 2, ("%d:%2d" %(int(cumulative[x]), int(round((cumulative[x]%1)*60))))
                 .replace(" ", "0")
                 )
         
@@ -84,7 +84,7 @@ class DataWindow(wx.Frame):
             #Make data into 2 lists:
                 #one of all dates in range
                 #one of all worked hours (including zeros)
-            self.MakeDates(days, months, years, hours, tot)
+            self.MakeDates(days, months, years, hours, cumulative)
             (self.dates, self.wk_hrs) = self.logic.makeDates()
             self.PlotData()
             

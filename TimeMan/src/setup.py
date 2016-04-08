@@ -2,7 +2,9 @@ from distutils.core import setup
 import py2exe
 import numpy
 from dlgs import Config
+import os
 
+baseName = 'Launcher'
 includes = []
 data_files = []
 
@@ -36,7 +38,6 @@ setup(
                           "skip_archive": False,
                           "ascii": False,
                           "custom_boot_script": '',
-                          "dest_base": "TimeManager"
                          }
               },
 
@@ -44,5 +45,8 @@ setup(
     zipfile = r'lib\library.zip',
 
     data_files = data_files,
-    windows=['Launcher.py']
+    windows=['%s.py' %baseName]
 )
+
+exeFormat = 'dist/%s.exe'
+os.rename(exeFormat %baseName, exeFormat %'TimeManager')

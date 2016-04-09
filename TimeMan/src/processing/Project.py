@@ -29,7 +29,7 @@ class Project(object):
         else:
             (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
             
-        self.findProjectInfo(self.name)
+        self.findProjectInfo()
         
 ################################################################################
         
@@ -68,14 +68,14 @@ class Project(object):
         now = dt.date.today()
         
         #Find start date
-        self.projStart = dt.date(self.days[0], self.months[0], self.years[0])
+        self.projStart = dt.date(self.years[0], self.months[0], self.days[0])
         #Calculate days since project start
         self.totalDays = (now - self.projStart).days
         self.totalHours = sum(self.hours)
         
         for x in xrange(len(self.days)):
             #Convert to date format
-            entry_date = dt.date(self.days[x], self.months[x], self.years[x])
+            entry_date = dt.date(self.years[x], self.months[x], self.days[x])
             
             if (now - entry_date).days < 7: #Add to week's total
                 self.thisWeek += self.hours[x]

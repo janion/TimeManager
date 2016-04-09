@@ -52,7 +52,10 @@ class ProjectLogic():
             #Look for project files in directory
             if (item.startswith(Constants.fileStart) and item.endswith(Constants.fileEnd)):
                 #Create project object
-                self.projects.append(Project(item.strip(Constants.fileStart).strip(Constants.fileEnd)))
+#                 print item.replace(Constants.fileStart, '').replace(Constants.fileEnd, '')
+#                 self.projects.append(Project(item.strip(Constants.fileStart).strip(Constants.fileEnd)))
+
+                self.projects.append(Project(item.replace(Constants.fileStart, '').replace(Constants.fileEnd, '')))
         
 ################################################################################
         

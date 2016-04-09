@@ -10,7 +10,7 @@ import Constants
 from Project import Project
 from ProjectInfo import ProjectInfo
 
-class Logic():
+class ProjectLogic():
     
     class BackdateType():
         UNIQUE = 0

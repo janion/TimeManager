@@ -1,3 +1,4 @@
+Finish testing ProjectLogic and Project
 Make the current GUI use ProjectLogic instead of Logic
 	-Then merge branch back onto master
 

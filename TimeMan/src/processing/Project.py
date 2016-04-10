@@ -92,33 +92,32 @@ class Project(object):
         
 ################################################################################
         
-    def recordWorkSession(self, workDuration):
-        #Find hours worked in decimal
-        hours_worked = round(workDuration / 3600., 2)      
+    def recordWorkSession(self, workHours):
+        workHours = round(workHours, 2)
         
-        if hours_worked > 0.00: #If a non-zero amount of time has been worked
+        if workHours > 0.00: #If a non-zero amount of time has been worked
             #Get name of project and today's date
             today = dt.date.today().strftime("%d-%m-%Y").split('-')
             today = [int(today[0]), int(today[1]), int(today[2])]
             
             if [self.days[-1], self.months[-1], self.years[-1]] == today:
                 #Update last entry if it has today's date
-                self.hours[-1] += hours_worked
+                self.hours[-1] += workHours
             else:
                 #Else make a new entry on the end
                 self.days.append(today[0])
                 self.months.append(today[1])
                 self.years.append(today[2])
-                self.hours.append(hours_worked)
+                self.hours.append(workHours)
             
             self.writeDataAndRefesh()
         
 ################################################################################
         
     def writeDataAndRefesh(self):
-            self.writeDataToFile()
-            (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
-            self.findProjectInfo()
+        self.writeDataToFile()
+        (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
+        self.findProjectInfo()
             
 ################################################################################
 
@@ -142,9 +141,20 @@ class Project(object):
 ################################################################################
 
     def insertBackdate(self, date, workTime):
-        beenAdded = False
         
-        for x in xrange(len(self.days)):
+        if ((date[2] < self.years[0]) or
+            (date[2] == self.years[0] and date[1] < self.months[0]) or
+            (date[2] == self.years[0] and date[1] == self.months[0] and date[0] < self.days[0])):
+            self.days.insert(0, date[0])
+            self.months.insert(0, date[1])
+            self.years.insert(0, date[2])
+            self.hours.insert(0, workTime)
+            beenAdded = True
+        else:
+            beenAdded = False
+        
+        x = 0
+        while beenAdded == False and x < len(self.days):
             if [self.days[x], self.months[x], self.years[x]] == date:
                 self.hours[x] += workTime
                 beenAdded = True
@@ -155,6 +165,8 @@ class Project(object):
                 self.years.insert(x, date[2])
                 self.hours.insert(x, workTime)
                 beenAdded = True
+                
+            x += 1
         
         if not beenAdded:
             self.days.append(date[0])

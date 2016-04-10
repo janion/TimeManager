@@ -145,9 +145,9 @@ class ProjectLogic():
             
 ################################################################################
 
-    def recordSession(self, name, startTime, endTime):
+    def recordSession(self, name, workTime):
         project = self.getProjectFromName(name)
-        project.recordWorkSession(endTime - startTime)
+        project.recordWorkSession(workTime)
             
 ################################################################################
 

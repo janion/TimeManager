@@ -1,5 +1,8 @@
-Merge branch back onto master
-
+Remove zero hour entries when possible
+When opening data window use current table selection to define which project to select
+Double click on project in main window to bring up data window
 Make table in main window resizable
 make table in data window resizable
 GridBagSizer
+
+Merge branch back onto master

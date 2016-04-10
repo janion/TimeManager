@@ -12,52 +12,34 @@ class Project(object):
     
     name = None
     projStart = None
-    days = []
-    months = []
-    years = []
-    hours = []
-    cumulative = []
-    totalHours = 0
-    thisWeek = 0
-    totalDays = 0
+    days = None
+    months = None
+    years = None
+    hours = None
+    cumulative = None
+    totalHours = None
+    thisWeek = None
+    totalDays = None
 
     def __init__(self, name, data = None):
         self.name = name
+        self.days = []
+        self.months = []
+        self.years = []
+        self.hours = []
+        self.cumulative = []
+        self.totalHours = 0
+        self.thisWeek = 0
+        self.totalDays = 0
         
         if data != None: # Only for a newly created file
-            (self.days, self.months, self.years, self.hours, self.cumulative) = data
-        else:
-            (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
-            
-        self.findProjectInfo()
-        
-################################################################################
-        
-    def recordWorkSession(self, workDuration):
-        #Find hours worked in decimal
-        hours_worked = round(workDuration / 3600., 2)      
-        
-        if hours_worked > 0.00: #If a non-zero amount of time has been worked
-            #Get name of project and today's date
-            today = dt.date.today().strftime("%d-%m-%Y").split('-')
-            today = [int(today[0]), int(today[1]), int(today[2])]
-            
-            if [self.days[-1], self.months[-1], self.years[-1]] == today:
-                #Update last entry if it has today's date
-                self.hours[-1] += hours_worked
-            else:
-                #Else make a new entry on the end
-                self.days.append(today[0])
-                self.months.append(today[1])
-                self.years.append(today[2])
-                self.hours.append(hours_worked)
-            
+            self.days.append(data[0])
+            self.months.append(data[1])
+            self.years.append(data[2])
+            self.hours.append(data[3])
+            self.cumulative.append(data[3])
             self.writeDataAndRefesh()
-        
-################################################################################
-        
-    def writeDataAndRefesh(self):
-            self.writeDataToFile()
+        else:
             (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
             self.findProjectInfo()
         
@@ -107,6 +89,36 @@ class Project(object):
                     cumulative.append(result[3])
             
         return (days, months, years, hours, cumulative)
+        
+################################################################################
+        
+    def recordWorkSession(self, workDuration):
+        #Find hours worked in decimal
+        hours_worked = round(workDuration / 3600., 2)      
+        
+        if hours_worked > 0.00: #If a non-zero amount of time has been worked
+            #Get name of project and today's date
+            today = dt.date.today().strftime("%d-%m-%Y").split('-')
+            today = [int(today[0]), int(today[1]), int(today[2])]
+            
+            if [self.days[-1], self.months[-1], self.years[-1]] == today:
+                #Update last entry if it has today's date
+                self.hours[-1] += hours_worked
+            else:
+                #Else make a new entry on the end
+                self.days.append(today[0])
+                self.months.append(today[1])
+                self.years.append(today[2])
+                self.hours.append(hours_worked)
+            
+            self.writeDataAndRefesh()
+        
+################################################################################
+        
+    def writeDataAndRefesh(self):
+            self.writeDataToFile()
+            (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
+            self.findProjectInfo()
             
 ################################################################################
 
@@ -120,7 +132,7 @@ class Project(object):
     
 ################################################################################
 
-    def getWorkOnDate(self, date):
+    def getHoursOnDate(self, date):
         for (day, month, year, workTime) in zip(self.days, self.months, self.years, self.hours):
             if [day, month, year] == date:
                 return workTime
@@ -156,26 +168,6 @@ class Project(object):
         
     def getName(self):
         return self.name
-        
-################################################################################
-    
-    def getDays(self):
-        return self.days
-        
-################################################################################
-    
-    def getMonths(self):
-        return self.months
-        
-################################################################################
-    
-    def getYears(self):
-        return self.years
-        
-################################################################################
-    
-    def getHours(self):
-        return self.hours
         
 ################################################################################
     

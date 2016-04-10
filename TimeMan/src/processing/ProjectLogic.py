@@ -21,7 +21,7 @@ class ProjectLogic():
     projects = []
 
     def __init__(self):
-        pass
+        self.findProjects()
         
 ################################################################################
     
@@ -47,14 +47,12 @@ class ProjectLogic():
 ################################################################################
     
     def findProjects(self): #Find all projects in home folder
+        self.projects = []
         #Create list
         for item in os.listdir(os.getcwd() + "\\" + Constants.fileLocation):
             #Look for project files in directory
             if (item.startswith(Constants.fileStart) and item.endswith(Constants.fileEnd)):
                 #Create project object
-#                 print item.replace(Constants.fileStart, '').replace(Constants.fileEnd, '')
-#                 self.projects.append(Project(item.strip(Constants.fileStart).strip(Constants.fileEnd)))
-
                 self.projects.append(Project(item.replace(Constants.fileStart, '').replace(Constants.fileEnd, '')))
         
 ################################################################################
@@ -122,17 +120,22 @@ class ProjectLogic():
             (date[2] == today[2] and date[1] == today[1] and
              date[0] <= today[0])
             ):
-            project = self.getProjectFromName(name)
-            timeOnDate = project.getWorkOnDate(date)
+            timeOnDate = self.getHoursOnDate(name, date)
             
             if timeOnDate == None:
                 return self.BackdateType.UNIQUE
-            elif timeOnDate + workTime > 24 * 60 * 60:
+            elif timeOnDate + workTime > 24:
                 return self.BackdateType.SPILL_OVER
             else:
                 return self.BackdateType.HAS_ENTRY
         else:
             return self.BackdateType.FUTURE
+            
+################################################################################
+
+    def getHoursOnDate(self, name, date):
+        project = self.getProjectFromName(name)
+        return project.getHoursOnDate(date)
             
 ################################################################################
 

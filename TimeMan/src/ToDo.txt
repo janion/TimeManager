@@ -1,8 +1,5 @@
-Finish testing ProjectLogic and Project
-Make the current GUI use ProjectLogic instead of Logic
-	-Then merge branch back onto master
+Merge branch back onto master
 
 Make table in main window resizable
 make table in data window resizable
-Finish tests
 GridBagSizer

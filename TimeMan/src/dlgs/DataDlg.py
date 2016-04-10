@@ -11,7 +11,7 @@ import Config
 
 class DataWindow(wx.Frame):
     
-    def __init__(self, parent, idd, logic):        
+    def __init__(self, parent, idd, logic, index=-1):        
         wx.Frame.__init__(self, parent, idd, "View data", size=(270, 440))
         self.panel = wx.Panel(self, -1)
         
@@ -37,6 +37,10 @@ class DataWindow(wx.Frame):
         
         #Bind events
         self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
+        
+        if index != -1:
+            self.proj_choice.SetSelection(index)
+            self.populateTable(None)
 
 ################################################################################
     

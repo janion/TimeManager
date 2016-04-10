@@ -174,7 +174,7 @@ class Window(wx.Frame):
         
     def openData(self, event): #Show user data for the selected project
         #Open data dialog
-        data_window = DataWindow(self, -1, self.logic)
+        data_window = DataWindow(self, -1, self.logic, self.proj_list.GetFirstSelected())
         data_window.Show()
 
 ################################################################################

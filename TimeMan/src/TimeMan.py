@@ -29,7 +29,7 @@ from dlgs.NewProjectDlg import NewProjectDlg
 from dlgs.DataDlg import DataWindow
 from dlgs.WorkSessionDlg import WorkSessionDlg
 from dlgs.BackdateDlg import BackdateDlg
-from processing.Logic import Logic
+from processing.ProjectLogic import ProjectLogic as Logic
 
 ################################################################################
 ################################################################################

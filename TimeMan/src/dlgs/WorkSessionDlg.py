@@ -57,8 +57,9 @@ class WorkSessionDlg(wx.Dialog):
         self.stop_btn.Enable(False)
         self.timer_text.Label = 'Current work session: 00:00:00'
         name = self.proj_choice.GetStringSelection()
-            
-        self.logic.recordSession(self.start_time, self.end_time, name)
+        
+        workHours = round((self.end_time - self.start_time) / 3600., 2)
+        self.logic.recordSession(name, workHours)
                     
         #Update list ctrl in main window
         if self.end_time != self.start_time:

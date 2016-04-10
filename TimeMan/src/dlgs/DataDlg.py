@@ -43,7 +43,7 @@ class DataWindow(wx.Frame):
     def populateTable(self, event): #Extract data from .csv file
         self.data_list.DeleteAllItems()
         
-        (days, months, years, hours, cumulative) = self.logic.getData(self.proj_choice.GetStringSelection())
+        (days, months, years, hours, cumulative) = self.logic.getProjectData(self.proj_choice.GetStringSelection())
         
         for x in xrange(len(days)):
             self.data_list.InsertStringItem(x, '%02d/%02d/%4d'

@@ -67,130 +67,68 @@ class BackdateDlg(wx.Dialog):
         workTime = (self.hours.GetValue() +
                     (float(self.mins.GetValue())/60)
                     )
-        name = self.proj_choice.GetStringSelection()
-        # Get backdate type
-        result = self.logic.getBackdateType(name, date, workTime)
-
-        if result == self.logic.BackdateType.UNIQUE:
-            self.logic.insertBackdate(name, date, workTime)
-            dlg = wx.MessageDialog(self, 'Successfully backdated',
-                                   'Success', wx.OK
-                                   )
-            dlg.ShowModal()
-        elif result == self.logic.BackdateType.HAS_ENTRY:
-            prevHours = self.logic.getHoursOnDate(name, date)
-            prevHr = int(prevHours)
-            prevMin = int(round((prevHours - prevHr) * 60))
-            hr = int(workTime)
-            min = int(round((workTime - hr) * 60))
-            
-            #Check if user wants to add on to time already recorded
-            dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
-                                          ' logged.\n\nAre you ' +
-                                          'sure you want to log a ' +
-                                          'further %d:%d?'
-                                          )
-                                   %(date[0], date[1], date[2], prevHr, prevMin, hr, min),
-                                   'Are you sure?', wx.YES_NO
-                                   )
-            result = dlg.ShowModal()
-            if result == wx.ID_YES:
-                self.logic.InsertBackDate(name, date, workTime)
-        elif result == self.logic.BackdateType.SPILL_OVER:
-            prevHours = self.logic.getHoursOnDate(name, date)
-            prevHr = int(prevHours)
-            prevMin = int(round((prevHours - prevHr) * 60))
-            dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
-                                          'hrs logged.\n\nYou cannot ' +
-                                          'log more than 24 hours on ' +
-                                          'a single day.'
-                                          )
-                                   %(date[0], date[1], date[2], prevHr, prevMin),
-                                   'Invalid time', wx.OK
-                                   )
-            result = dlg.ShowModal()
-        elif result == self.logic.BackdateType.FUTURE:
-            dlg = wx.MessageDialog(self,
-                                   'Please choose a date today or earlier.',
-                                   'Invalid date selection', wx.OK
-                                   )
-            dlg.ShowModal()
-        else:
-            dlg = wx.MessageDialog(self,
-                                   'Oops! Something went wrong',
-                                   'Error', wx.OK
-                                   )
-            dlg.ShowModal()
         
-################################################################################
-
-    def Close(self, event):
-        self.Destroy()
-            
-################################################################################
-
-    def InsertBackDate(self, name, date, days, mths, yrs, hrs, index, delta):
-        #Write data to file
+        if workTime > 0:
+            name = self.proj_choice.GetStringSelection()
+            # Get backdate type
+            result = self.logic.getBackdateType(name, date, workTime)
     
-        #Get hours to be backdated
-        work_time = (self.hours.GetValue() +
-                     (float(self.mins.GetValue())/60)
-                     )
-        
-        if work_time > 0.00: #Check the time entered is valid
-            update = True #Marker
-            if delta == 1: #Delta == 1 means that it is a unique entry
-                #Insert entry into the lists
-                days.insert(index, date[0])
-                mths.insert(index, date[1])
-                yrs.insert(index, date[2])
-                hrs.insert(index, round(work_time, 2))
-            elif delta == 2: #Means that another entry must be updated
-                if (hrs[index - 1] + work_time) > 24: #Check if time is valid
-                    #Tell user that the time is invalid
-                    dlg = wx.MessageDialog(self, ('%d/%d/%d already has %4.2f' +
-                                                  'hrs logged.\n\nYou cannot ' +
-                                                  'log more than 24 hours on ' +
-                                                  'a single day.'
-                                                  )
-                                           %tuple(date + [hrs[index-1]]),
-                                           'Invalid time', wx.OK
-                                           )
-                    result = dlg.ShowModal()
-                    update = False
-                    
-                elif hrs[index - 1] != 0.00:
-                    #Check if user wants to add on to time already recorded
-                    dlg = wx.MessageDialog(self, ('%d/%d/%d already has %4.2f' +
-                                                  'hrs logged.\n\nAre you ' +
-                                                  'sure you want to log a ' +
-                                                  'further %4.2fhrs?'
-                                                  )
-                                           %tuple(date +
-                                                  [hrs[index-1], work_time]
-                                                  ),
-                                           'Are you sure?', wx.YES_NO
-                                           )
-                    result = dlg.ShowModal()
-                    if result == wx.ID_YES:
-                        hrs[index-1] = round(hrs[index-1] + work_time, 2)
-                    else:
-                        update = False
-                else: #If entry currently has zero hours, add work_time
-                    hrs[index-1] = round(work_time, 2)
-            
-            if update == True: #If all criteria met and user happy
-                #Write data to file
-                self.logic.writeDataToFile(name, days, mths, yrs, hrs)
-                
-                #Update the list ctrl in main window
+            if result == self.logic.BackdateType.UNIQUE:
+                self.logic.insertBackdate(name, date, workTime)
+                dlg = wx.MessageDialog(self, 'Successfully backdated',
+                                       'Success', wx.OK
+                                       )
+                dlg.ShowModal()
                 self.parent.getProjectInfo(name)
-                #Tell user of success
-                dlg2 = wx.MessageDialog(self,'Successfully backdated: %s'
-                                        %name, 'Back date successful',
-                                        wx.OK | wx.ICON_INFORMATION
-                                        )
-                dlg2.ShowModal()
+                
+            elif result == self.logic.BackdateType.HAS_ENTRY:
+                prevHours = self.logic.getHoursOnDate(name, date)
+                prevHr = int(prevHours)
+                prevMin = int(round((prevHours - prevHr) * 60))
+                hr = int(workTime)
+                min = int(round((workTime - hr) * 60))
+                
+                #Check if user wants to add on to time already recorded
+                dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
+                                              ' logged.\n\nAre you ' +
+                                              'sure you want to log a ' +
+                                              'further %d:%02d?'
+                                              )
+                                       %(date[0], date[1], date[2], prevHr, prevMin, hr, min),
+                                       'Are you sure?', wx.YES_NO
+                                       )
+                result = dlg.ShowModal()
+                if result == wx.ID_YES:
+                    self.logic.insertBackdate(name, date, workTime)
+                    self.parent.getProjectInfo(name)
+                    
+            elif result == self.logic.BackdateType.SPILL_OVER:
+                prevHours = self.logic.getHoursOnDate(name, date)
+                prevHr = int(prevHours)
+                prevMin = int(round((prevHours - prevHr) * 60))
+                dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
+                                              'hrs logged.\n\nYou cannot ' +
+                                              'log more than 24 hours on ' +
+                                              'a single day.'
+                                              )
+                                       %(date[0], date[1], date[2], prevHr, prevMin),
+                                       'Invalid time', wx.OK
+                                       )
+                result = dlg.ShowModal()
+                
+            elif result == self.logic.BackdateType.FUTURE:
+                dlg = wx.MessageDialog(self,
+                                       'Please choose a date today or earlier.',
+                                       'Invalid date selection', wx.OK
+                                       )
+                dlg.ShowModal()
+                
+            else:
+                dlg = wx.MessageDialog(self,
+                                       'Oops! Something went wrong',
+                                       'Error', wx.OK
+                                       )
+                dlg.ShowModal()
         else:
             #Tell user to input valid time
             dlg2 = wx.MessageDialog(self, 'Please add a time longer than 0:00',
@@ -198,6 +136,11 @@ class BackdateDlg(wx.Dialog):
                                     wx.OK | wx.ICON_INFORMATION
                                     )
             dlg2.ShowModal()
+        
+################################################################################
+
+    def Close(self, event):
+        self.Destroy()
         
 ################################################################################
 

@@ -140,12 +140,10 @@ class Window(wx.Frame):
         tot_days = projInfo.getTotalDays()
          
         #Change total times from decimal hours to time format
-        tot_f = "%d:%2d" %(int(tot), int(round((tot % 1) * 60)))
-        tot_f = tot_f.replace(" ", "0")
-        this_week_f = "%d:%2d" %(int(this_week),
+        tot_f = "%d:%02d" %(int(tot), int(round((tot % 1) * 60)))
+        this_week_f = "%d:%02d" %(int(this_week),
                                  int(round((this_week % 1) * 60))
                                  )
-        this_week_f = this_week_f.replace(" ", "0")
         
         # Update table to show project
         if self.proj_list.FindItem(-1,item) == -1:

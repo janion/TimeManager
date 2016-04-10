@@ -48,6 +48,7 @@ class Project(object):
     def findProjectInfo(self):
         #Get current date
         now = dt.date.today()
+        self.thisWeek = 0
         
         #Find start date
         self.projStart = dt.date(self.years[0], self.months[0], self.days[0])

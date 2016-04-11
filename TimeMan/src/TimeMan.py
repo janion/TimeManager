@@ -38,12 +38,13 @@ class Window(wx.Frame):
     def __init__(self, parent, idd, title):
         wx.Frame.__init__(self, parent, idd, title, size=(495, 350))
         self.panel = wx.Panel(self, -1)
+        self.SetMinSize(self.GetSize())
         
         self.logic = Logic()
         
         #Create list control to show projects
-        self.proj_list = wx.ListCtrl(self.panel, -1, pos=(10, 10),
-                                     size=(455, 270), style=wx.LC_REPORT
+        self.proj_list = wx.ListCtrl(self.panel, -1, pos=(10, 40),
+                                     size=(455, 240), style=wx.LC_REPORT
                                      )
 
         #Add columns
@@ -58,9 +59,27 @@ class Window(wx.Frame):
             self.getProjectInfo(item)
             
         self.setupMenu()
+        self.createButtons()
         
         self.Bind(wx.EVT_CLOSE, self.onClose)
             
+################################################################################
+
+    def createButtons(self):
+        #Create buttons
+        self.new_btn = wx.Button(self.panel, -1, 'New project', pos=(10, 10))
+        self.del_btn = wx.Button(self.panel, -1, 'Close project', pos=(100, 10))
+        self.backdate_btn = wx.Button(self.panel, -1, 'Back date', pos=(190, 10))
+        self.start_btn = wx.Button(self.panel, -1, 'Start work', pos=(280, 10))
+        self.data_btn = wx.Button(self.panel, -1, 'View data', pos=(370, 10))
+        
+        #Bind events
+        self.Bind(wx.EVT_BUTTON, self.newProject, self.new_btn)
+        self.Bind(wx.EVT_BUTTON, self.closeProject, self.del_btn)
+        self.Bind(wx.EVT_BUTTON, self.backDate, self.backdate_btn)
+        self.Bind(wx.EVT_BUTTON, self.startWork, self.start_btn)
+        self.Bind(wx.EVT_BUTTON, self.openData, self.data_btn)
+
 ################################################################################
             
     def setupMenu(self):

@@ -11,12 +11,11 @@ import wx
 
 class BackdateDlg(wx.Dialog):
     def __init__(self, parent, idd, logic):
-        
-        self.logic = logic
-        
         wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
+        
+        self.logic = logic
         
         #Create text and project choice box
         wx.StaticText(self.panel, -1,

@@ -154,3 +154,9 @@ class ProjectLogic():
     def createNewProjectFile(self, name, date, workTime):
         self.projects.append(Project(name, (date[0], date[1], date[2], workTime)))
             
+################################################################################
+
+    def cleanProjectFiles(self):
+        for project in self.projects:
+            project.clearZeroHourEntries()
+            

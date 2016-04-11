@@ -58,6 +58,8 @@ class Window(wx.Frame):
             self.getProjectInfo(item)
             
         self.setupMenu()
+        
+        self.Bind(wx.EVT_CLOSE, self.onClose)
             
 ################################################################################
             
@@ -86,6 +88,12 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_MENU, self.backDate, id=201)
         self.Bind(wx.EVT_MENU, self.startWork, id=202)
         self.Bind(wx.EVT_MENU, self.openData, id=203)
+        
+################################################################################
+        
+    def onClose(self, event):
+        self.logic.cleanProjectFiles()
+        event.Skip()
         
 ################################################################################
         

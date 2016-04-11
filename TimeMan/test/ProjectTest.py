@@ -194,6 +194,38 @@ class Test(unittest.TestCase):
         os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.newName, Constants.fileEnd))
             
 ################################################################################
+
+    def testShouldClearZeroHourEntry(self):
+        data = (1, 1, 2015, 0)
+        project = Project(self.newName, data)
+        
+        (newDay, newMonth, newYear, newHour) = (2, 2, 2014, 2.34)
+        project.insertBackdate([newDay, newMonth, newYear], newHour)
+        
+        expected = ([newDay, data[0]], [newMonth, data[1]], [newYear, data[2]], [newHour, data[3]], [2.34, 2.34])
+        self.assertEqual(expected, project.getData())
+        
+        project.clearZeroHourEntries()
+        expected = ([newDay], [newMonth], [newYear], [newHour], [2.34])
+        self.assertEqual(expected, project.getData())
+        
+        os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.newName, Constants.fileEnd))
+            
+################################################################################
+
+    def testShouldNotClearZeroHourEntryForProjectWithOnlyZeroHours(self):
+        data = (1, 1, 2015, 0)
+        project = Project(self.newName, data)
+        
+        expected = ([data[0]], [data[1]], [data[2]], [data[3]], [0])
+        self.assertEqual(expected, project.getData())
+        
+        project.clearZeroHourEntries()
+        self.assertEqual(expected, project.getData())
+        
+        os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.newName, Constants.fileEnd))
+            
+################################################################################
 ################################################################################
 
 

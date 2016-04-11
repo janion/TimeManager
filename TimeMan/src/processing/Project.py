@@ -179,6 +179,23 @@ class Project(object):
         
 ################################################################################
         
+    def clearZeroHourEntries(self):
+        if len(self.hours) > 1:
+            zeroFound = False
+            for x in xrange(len(self.hours)):
+                if self.hours[x] == 0:
+                    self.days.pop(x)
+                    self.months.pop(x)
+                    self.years.pop(x)
+                    self.hours.pop(x)
+                    zeroFound = True
+                    break;
+            
+            if zeroFound:
+                self.writeDataAndRefesh()
+        
+################################################################################
+        
     def getName(self):
         return self.name
         

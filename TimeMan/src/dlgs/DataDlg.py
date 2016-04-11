@@ -18,27 +18,6 @@ class DataWindow(wx.Frame):
         
         self.logic = logic
         
-#         #############
-#         sizer = wx.GridBagSizer(0,5)
-#         #Create text and choice box for the project to work on
-#         text = wx.StaticText(self.panel, -1, "Please select the project to view:",
-#                              (10, 10)
-#                              )
-#         self.proj_choice = wx.Choice(self.panel, size=(230, -1),
-#                                      choices=self.logic.getProjectNames()
-#                                      )
-#         
-#         #Open list ctrl to house data
-#         self.data_list = wx.ListCtrl(self.panel, -1, pos=(10, 60),
-#                                      size=(230, 330), style=wx.LC_REPORT
-#                                      )
-#         
-#         sizer.Add(text, pos = (0, 0), flag = wx.EXPAND|wx.ALL, border = 5)
-#         sizer.Add(self.proj_choice, pos = (1, 0), flag = wx.ALIGN_CENTER|wx.EXPAND|wx.ALL, border = 5)
-#         sizer.Add(self.data_list, pos = (2, 0), flag = wx.ALIGN_CENTER|wx.EXPAND|wx.ALL, border = 5)
-#         self.panel.SetSizerAndFit(sizer)
-#         #######################
-        
         #Create text and choice box for the project to work on
         wx.StaticText(self.panel, -1, "Please select the project to view:",
                       (10, 10)
@@ -59,10 +38,20 @@ class DataWindow(wx.Frame):
         
         #Bind events
         self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
+        self.Bind(wx.EVT_SIZE, self.resize)
         
         if index != -1:
             self.proj_choice.SetSelection(index)
             self.populateTable(None)
+
+################################################################################
+    
+    def resize(self, event):
+        event.Skip()
+        size = self.GetSize()
+        
+        self.proj_choice.SetSize((size[0] - 40, -1))
+        self.data_list.SetSize((size[0] - 40, size[1] - 110))
 
 ################################################################################
     

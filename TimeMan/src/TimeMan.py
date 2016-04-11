@@ -62,6 +62,20 @@ class Window(wx.Frame):
         self.createButtons()
         
         self.Bind(wx.EVT_CLOSE, self.onClose)
+        self.Bind(wx.EVT_SIZE, self.resize)
+
+################################################################################
+    
+    def resize(self, event):
+        event.Skip()
+        size = self.GetSize()
+        
+        self.proj_list.SetSize((size[0] - 40, size[1] - 110))
+#         self.new_btn.SetSize()
+#         self.del_btn.SetSize()
+#         self.backdate_btn.SetSize()
+#         self.start_btn.SetSize()
+#         self.data_btn.SetSize()
             
 ################################################################################
 

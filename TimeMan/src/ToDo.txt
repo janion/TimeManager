@@ -1,6 +1,5 @@
-Remove zero hour entries when possible
 Replace menu bar with buttons as before for practicality
-Double click on project in main window to bring up data window
+Double click on project in main window to bring up data window???
 Make table in main window resizable
 make table in data window resizable
 GridBagSizer

@@ -69,13 +69,16 @@ class Window(wx.Frame):
     def resize(self, event):
         event.Skip()
         size = self.GetSize()
+        centre = (self.GetSize()[0] / 2) - 10
+        btnSize = self.new_btn.GetSize()[0]
         
         self.proj_list.SetSize((size[0] - 40, size[1] - 110))
-#         self.new_btn.SetSize()
-#         self.del_btn.SetSize()
-#         self.backdate_btn.SetSize()
-#         self.start_btn.SetSize()
-#         self.data_btn.SetSize()
+        
+        self.new_btn.SetPosition((centre - int(2.5 * btnSize) - 10, 10))
+        self.del_btn.SetPosition((centre - int(1.5 * btnSize) - 5, 10))
+        self.backdate_btn.SetPosition((centre - int(0.5 * btnSize), 10))
+        self.start_btn.SetPosition((centre + int(0.5 * btnSize) + 5, 10))
+        self.data_btn.SetPosition((centre + int(1.5 * btnSize) + 10, 10))
             
 ################################################################################
 

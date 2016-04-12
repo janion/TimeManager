@@ -14,7 +14,7 @@ class DataWindow(wx.Frame):
     def __init__(self, parent, idd, logic, index=-1):        
         wx.Frame.__init__(self, parent, idd, "View data", size=(270, 440))
         self.panel = wx.Panel(self, -1)
-        self.SetMinSize(self.GetSize())
+        self.SetMinSize((270, 240))
         
         self.logic = logic
         
@@ -27,9 +27,7 @@ class DataWindow(wx.Frame):
                                      )
          
         #Open list ctrl to house data
-        self.data_list = wx.ListCtrl(self.panel, -1, pos=(10, 60),
-                                     size=(230, 330), style=wx.LC_REPORT
-                                     )
+        self.data_list = wx.ListCtrl(self.panel, -1, pos=(10, 60), style=wx.LC_REPORT)
 
         #Add columns
         self.data_list.InsertColumn(0, "Date", width=80)

@@ -1,6 +1,3 @@
 Double click on project in main window to bring up data window???
-Make table in main window resizable
-make table in data window resizable
-GridBagSizer
 
 Merge branch back onto master

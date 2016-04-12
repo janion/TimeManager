@@ -10,7 +10,7 @@ Created on Mon Sep 21 14:59:28 2015
 import wx
 
 class BackdateDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic):
+    def __init__(self, parent, idd, logic, index = -1):
         wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
@@ -52,6 +52,10 @@ class BackdateDlg(wx.Dialog):
         self.Bind(wx.EVT_CHOICE, self.ProjectSelected, self.proj_choice)
         self.Bind(wx.EVT_BUTTON, self.BackDate, self.log_btn)
         self.Bind(wx.EVT_BUTTON, self.Close, self.cancel_btn)
+        
+        if index != -1:
+            self.proj_choice.SetSelection(index)
+            self.ProjectSelected(None)
         
 ################################################################################
 

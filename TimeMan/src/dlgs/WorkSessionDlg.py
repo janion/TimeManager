@@ -9,7 +9,7 @@ import wx
 import time
 
 class WorkSessionDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic):        
+    def __init__(self, parent, idd, logic, index = -1):        
         wx.Dialog.__init__(self, parent, idd, 'Work session', size=(250, 140))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
@@ -43,6 +43,10 @@ class WorkSessionDlg(wx.Dialog):
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         
         self.Bind(wx.EVT_TIMER, self.OnTimer)
+        
+        if index != -1:
+            self.proj_choice.SetSelection(index)
+            self.ProjectSelected(None)
 
 ################################################################################
 

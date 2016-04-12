@@ -140,7 +140,7 @@ class Window(wx.Frame):
         
     def backDate(self, event): #Add time entries without real time recording
         #Open backdating dialog
-        dlg = BackdateDlg(self, -1, self.logic)
+        dlg = BackdateDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
         dlg.ShowModal()
         
 ################################################################################
@@ -151,6 +151,7 @@ class Window(wx.Frame):
                                     'Delete project', self.logic.getProjectNames(),
                                     wx.CHOICEDLG_STYLE
                                     )
+        dlg.SetSelection(self.proj_list.GetFirstSelected())
 
         if dlg.ShowModal() == wx.ID_OK:
             #Check user wants to delete project
@@ -234,5 +235,5 @@ class Window(wx.Frame):
         
     def startWork(self, event): #Allow user to record a work session
         #Open work session dialog
-        dlg = WorkSessionDlg(self, -1, self.logic)
+        dlg = WorkSessionDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
         dlg.ShowModal()

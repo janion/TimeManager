@@ -52,7 +52,3 @@ setup(
 exeFormat = 'dist\\%s.exe'
 os.rename(exeFormat %baseName, exeFormat %'TimeManager')
 os.mkdir('dist\\data')
-
-# shutil.copytree("data", "dist\\data")
-# for item in os.listdir("dist\\data"):
-#     os.popen('attrib +h dist\\data\\%s' %item)

@@ -21,6 +21,9 @@ class ProjectLogic():
     projects = []
 
     def __init__(self):
+        # Create data folder if it doesn't exist
+        if Constants.fileLocation.strip("\\") not in os.listdir(os.getcwd()):
+            os.mkdir(Constants.fileLocation)
         self.findProjects()
         
 ################################################################################

@@ -17,6 +17,8 @@ def upgradeFiles():
             names.append(name.replace(Constants.fileStart, '').replace(Constants.fileEnd, ''))
     
     FileUpgrader.upgradeFiles(names)
+        
+################################################################################
 
 if __name__ == '__main__':
     upgradeFiles()

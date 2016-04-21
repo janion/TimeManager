@@ -75,26 +75,3 @@ class ClaimedHoursDlg(wx.Dialog):
         self.logic.setClaimedHours(self.proj_choice.GetStringSelection(), checked)
         self.Destroy()
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        

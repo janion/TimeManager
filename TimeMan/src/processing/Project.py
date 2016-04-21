@@ -185,7 +185,7 @@ class Project(object):
             self.months.append(date[1])
             self.years.append(date[2])
             self.hours.append(workTime)
-            self.logged.insert(0, 0)
+            self.logged.append(0)
         
         self.writeDataAndRefesh()
         

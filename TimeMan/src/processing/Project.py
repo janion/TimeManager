@@ -209,6 +209,14 @@ class Project(object):
         
 ################################################################################
         
+    def claimHours(self, claimedIndices):
+        for index in claimedIndices:
+            self.logged[index] = 1
+        
+        self.writeDataAndRefesh()
+        
+################################################################################
+        
     def getName(self):
         return self.name
         

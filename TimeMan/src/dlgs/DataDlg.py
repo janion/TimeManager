@@ -9,12 +9,14 @@ import wx
 
 import Config
 
-class DataWindow(wx.Frame):
+class DataWindow(wx.Dialog):
     
     def __init__(self, parent, idd, logic, index=-1):        
-        wx.Frame.__init__(self, parent, idd, "View data", size=(330, 440))
+        wx.Dialog.__init__(self, parent, idd, "View data", size=(330, 440),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
+                           )
         self.panel = wx.Panel(self, -1)
-        self.SetMinSize((270, 240))
+        self.SetMinSize(self.GetSize())
         
         self.logic = logic
         

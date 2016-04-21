@@ -29,6 +29,7 @@ from dlgs.NewProjectDlg import NewProjectDlg
 from dlgs.DataDlg import DataWindow
 from dlgs.WorkSessionDlg import WorkSessionDlg
 from dlgs.BackdateDlg import BackdateDlg
+from dlgs.ClaimedHoursDlg import ClaimedHoursDlg
 from processing.ProjectLogic import ProjectLogic as Logic
 
 ################################################################################
@@ -112,8 +113,9 @@ class Window(wx.Frame):
         menu2 = wx.Menu()
         menu2.Append(201, "Backdate")
         menu2.Append(202, "Start work session")
+        menu2.Append(203, "Claim hours")
         menu2.AppendSeparator()
-        menu2.Append(203, "View data")
+        menu2.Append(204, "View data")
         self.menuBar.Append(menu2, "Project")
         
         self.SetMenuBar(self.menuBar)
@@ -123,7 +125,8 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_MENU, self.close, id=103)
         self.Bind(wx.EVT_MENU, self.backDate, id=201)
         self.Bind(wx.EVT_MENU, self.startWork, id=202)
-        self.Bind(wx.EVT_MENU, self.openData, id=203)
+        self.Bind(wx.EVT_MENU, self.claimHours, id=203)
+        self.Bind(wx.EVT_MENU, self.openData, id=204)
         
 ################################################################################
         
@@ -141,6 +144,13 @@ class Window(wx.Frame):
     def backDate(self, event): #Add time entries without real time recording
         #Open backdating dialog
         dlg = BackdateDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
+        dlg.ShowModal()
+        
+################################################################################
+        
+    def claimHours(self, event): #Add time entries without real time recording
+        #Open hour claiming dialog
+        dlg = ClaimedHoursDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
         dlg.ShowModal()
         
 ################################################################################

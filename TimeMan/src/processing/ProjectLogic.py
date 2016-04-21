@@ -163,3 +163,25 @@ class ProjectLogic():
         for project in self.projects:
             project.clearZeroHourEntries()
             
+################################################################################
+
+    def setClaimedHours(self, projectName, claimedIndices):
+        project = self.getProjectFromName(projectName)
+        project.claimHours(claimedIndices)
+            
+################################################################################
+
+    def getFormattedData(self, projectName):
+        project = self.getProjectFromName(projectName)
+        data = project.getData()
+        
+        fList = []
+        states = []
+        for x in xrange(len(data[0])):
+            hrString = "%2d:%02d" %(int(data[3][x]), int((data[3][x] - int(data[3][x])) * 60))
+            fString = "%s - %02d//%02d//%4d" %(hrString, data[0][x], data[1][x], data[2][x])
+            fList.append(fString)
+            states.append(bool(data[5][x]))
+        
+        return (fList, states)
+            

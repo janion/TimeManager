@@ -18,18 +18,6 @@ class Test(unittest.TestCase):
     testDataFiles = ["test0", "test1", "test2"]
     testFileInfo = [[0.05, 0], [1.03, 0], [51.490, 0]]
     newFile = "test3"
-#     testCounter = 0
-    
-#     def setUpConstants(self):
-#         self.origLocation = Constants.fileLocation
-#         Constants.fileLocation = 'testFolder%d\\' %testCounter
-#         testCounter += 1
-#         os.mkdir(Constants.fileLocation)
-#             
-################################################################################
-#     
-#     def tearDownConstants(self):
-#         Constants.fileLocation = self.origLocation
             
 ################################################################################
 
@@ -69,18 +57,19 @@ class Test(unittest.TestCase):
         xYears = [2015, 2015]
         xHours = [0.01, 0.04]
         xCumulativeTotal = [0.01, 0.05]
+        xLogged = [0, 0]
          
-        (days, months, years, hours, CumulativeTotal) = projectLogic.getProjectData(self.testDataFiles[0])
+        (days, months, years, hours, cumulativeTotal, logged) = projectLogic.getProjectData(self.testDataFiles[0])
         self.assertEquals(xDays, days)
         self.assertEquals(xMonths, months)
         self.assertEquals(xYears, years)
         self.assertEquals(xHours, hours)
-        self.assertEquals(xCumulativeTotal, CumulativeTotal)
+        self.assertEquals(xCumulativeTotal, cumulativeTotal)
+        self.assertEquals(xLogged, logged)
             
 ################################################################################
     
     def testShouldIdentifyValidUniqueBackdate(self):
-#         self.setUpConstants()
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
@@ -99,13 +88,10 @@ class Test(unittest.TestCase):
         os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
         os.removedirs(Constants.fileLocation)
         Constants.fileLocation = origLocation
-
-#         self.tearDownConstants()
             
 ################################################################################
     
     def testShouldIdentifyValidHasEntryBackdate(self):
-#         self.setUpConstants()
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
@@ -124,13 +110,10 @@ class Test(unittest.TestCase):
         os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
         os.removedirs(Constants.fileLocation)
         Constants.fileLocation = origLocation
-
-#         self.tearDownConstants()
             
 ################################################################################
     
     def testShouldIdentifyInvalidFutureBackdate(self):
-#         self.setUpConstants()
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
@@ -149,13 +132,10 @@ class Test(unittest.TestCase):
         os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
         os.removedirs(Constants.fileLocation)
         Constants.fileLocation = origLocation
-        
-#         self.tearDownConstants()
             
 ################################################################################
     
     def testShouldIdentifyInvalidSpillOverBackdate(self):
-#         self.setUpConstants()
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
@@ -174,13 +154,10 @@ class Test(unittest.TestCase):
         os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
         os.removedirs(Constants.fileLocation)
         Constants.fileLocation = origLocation
-        
-#         self.tearDownConstants()
             
 ################################################################################
     
     def testShouldCreateProjectFile(self):
-#         self.setUpConstants()
         
         projectLogic = ProjectLogic()
         origLocation = Constants.fileLocation
@@ -193,19 +170,20 @@ class Test(unittest.TestCase):
             projectLogic.createNewProjectFile(self.testDataFiles[x], [1, 1, 2001], 5.55)
             self.assertEquals(self.testDataFiles[0:x+1], projectLogic.getProjectNames())
         
-            (days, mnths, yrs, hrs, cumulative) = projectLogic.getProjectData(self.testDataFiles[x])
+            (days, mnths, yrs, hrs, cumulative, logged) = projectLogic.getProjectData(self.testDataFiles[x])
             self.assertEquals(days, [1])
             self.assertEquals(mnths, [1])
             self.assertEquals(yrs, [2001])
             self.assertEquals(hrs, [5.55])
             self.assertEquals(cumulative, [5.55])
+            self.assertEquals(logged, [0])
         
         for item in os.listdir(Constants.fileLocation):
             os.remove('%s%s' %(Constants.fileLocation, item))
         os.removedirs(Constants.fileLocation)
         Constants.fileLocation = origLocation
-        
-#         self.tearDownConstants()
+            
+################################################################################
 
 if __name__ == "__main__":
     unittest.main()

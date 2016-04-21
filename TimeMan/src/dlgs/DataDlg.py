@@ -12,7 +12,7 @@ import Config
 class DataWindow(wx.Frame):
     
     def __init__(self, parent, idd, logic, index=-1):        
-        wx.Frame.__init__(self, parent, idd, "View data", size=(270, 440))
+        wx.Frame.__init__(self, parent, idd, "View data", size=(330, 440))
         self.panel = wx.Panel(self, -1)
         self.SetMinSize((270, 240))
         
@@ -33,6 +33,7 @@ class DataWindow(wx.Frame):
         self.data_list.InsertColumn(0, "Date", width=80)
         self.data_list.InsertColumn(1, "hours", width=60)
         self.data_list.InsertColumn(2, "Total hours", width=90)
+        self.data_list.InsertColumn(3, "Claimed", width=60)
         
         #Bind events
         self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
@@ -56,7 +57,7 @@ class DataWindow(wx.Frame):
     def populateTable(self, event): #Extract data from .csv file
         self.data_list.DeleteAllItems()
         
-        (days, months, years, hours, cumulative) = self.logic.getProjectData(self.proj_choice.GetStringSelection())
+        (days, months, years, hours, cumulative, logged) = self.logic.getProjectData(self.proj_choice.GetStringSelection())
         
         for x in xrange(len(days)):
             self.data_list.InsertStringItem(x, '%02d/%02d/%4d'
@@ -70,6 +71,7 @@ class DataWindow(wx.Frame):
                 x, 2, ("%d:%2d" %(int(cumulative[x]), int(round((cumulative[x]%1)*60))))
                 .replace(" ", "0")
                 )
+            self.data_list.SetStringItem(x, 3, str(logged[x]).replace("0", "N").replace("1", "Y"))
         
         self.data_list.SetFocus()
 

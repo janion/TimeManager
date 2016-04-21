@@ -151,7 +151,8 @@ class Window(wx.Frame):
                                     'Delete project', self.logic.getProjectNames(),
                                     wx.CHOICEDLG_STYLE
                                     )
-        dlg.SetSelection(self.proj_list.GetFirstSelected())
+        if (self.proj_list.GetFirstSelected() != -1):
+            dlg.SetSelection(self.proj_list.GetFirstSelected())
 
         if dlg.ShowModal() == wx.ID_OK:
             #Check user wants to delete project

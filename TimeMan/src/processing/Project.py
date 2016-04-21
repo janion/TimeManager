@@ -17,6 +17,7 @@ class Project(object):
     years = None
     hours = None
     cumulative = None
+    logged = None
     totalHours = None
     thisWeek = None
     totalDays = None
@@ -28,6 +29,7 @@ class Project(object):
         self.years = []
         self.hours = []
         self.cumulative = []
+        self.logged = []
         self.totalHours = 0
         self.thisWeek = 0
         self.totalDays = 0
@@ -38,9 +40,10 @@ class Project(object):
             self.years.append(data[2])
             self.hours.append(data[3])
             self.cumulative.append(data[3])
+            self.logged.append(0)
             self.writeDataAndRefesh()
         else:
-            (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
+            (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile()
             self.findProjectInfo()
         
 ################################################################################
@@ -70,14 +73,15 @@ class Project(object):
             r1 = csv.reader(csvfile, delimiter=',')
             
             #Declare empty lists
-            (days, months, years, hours, cumulative) = ([], [], [], [], [])
+            (days, months, years, hours, cumulative, logged) = ([], [], [], [], [], [])
             #Find the dates and hours worked
             for row in r1:
                 try:
-                    result = [int(row[0]), int(row[1]), int(row[2]), float(row[3])]
+                    result = [int(row[0]), int(row[1]), int(row[2]), float(row[3]), int(row[4])]
                 except:
                     continue #Skip an erroneous entry
                 
+                logged.append(result[4])
                 hours.append(result[3])
                 years.append(result[2])
                 months.append(result[1])
@@ -89,7 +93,7 @@ class Project(object):
                 else:
                     cumulative.append(result[3])
             
-        return (days, months, years, hours, cumulative)
+        return (days, months, years, hours, cumulative, logged)
         
 ################################################################################
         
@@ -110,6 +114,7 @@ class Project(object):
                 self.months.append(today[1])
                 self.years.append(today[2])
                 self.hours.append(workHours)
+                self.logged.append(0)
             
             self.writeDataAndRefesh()
         
@@ -117,7 +122,7 @@ class Project(object):
         
     def writeDataAndRefesh(self):
         self.writeDataToFile()
-        (self.days, self.months, self.years, self.hours, self.cumulative) = self.readFile()
+        (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile()
         self.findProjectInfo()
             
 ################################################################################
@@ -128,7 +133,7 @@ class Project(object):
             csvfile.truncate() #Part of the bodge a few lines above
             w1 = csv.writer(csvfile, delimiter=',')
             for x in xrange(len(self.hours)):
-                w1.writerow([self.days[x], self.months[x], self.years[x], self.hours[x]])
+                w1.writerow([self.days[x], self.months[x], self.years[x], self.hours[x], self.logged[x]])
     
 ################################################################################
 
@@ -143,6 +148,7 @@ class Project(object):
 
     def insertBackdate(self, date, workTime):
         
+        # If before first entry
         if ((date[2] < self.years[0]) or
             (date[2] == self.years[0] and date[1] < self.months[0]) or
             (date[2] == self.years[0] and date[1] == self.months[0] and date[0] < self.days[0])):
@@ -150,21 +156,26 @@ class Project(object):
             self.months.insert(0, date[1])
             self.years.insert(0, date[2])
             self.hours.insert(0, workTime)
+            self.logged.insert(0, 0)
             beenAdded = True
         else:
             beenAdded = False
         
+        # While the backdated session has not been logged
         x = 0
         while beenAdded == False and x < len(self.days):
+            # If work is to be added to an entry
             if [self.days[x], self.months[x], self.years[x]] == date:
                 self.hours[x] += workTime
                 beenAdded = True
                 
+            # If an entry was later than the backdated session
             elif (self.days[x] > date[0] and self.months[x] >= date[1] and self.years[x] >= date[2]):
                 self.days.insert(x, date[0])
                 self.months.insert(x, date[1])
                 self.years.insert(x, date[2])
                 self.hours.insert(x, workTime)
+                self.logged.insert(0, 0)
                 beenAdded = True
                 
             x += 1
@@ -174,6 +185,7 @@ class Project(object):
             self.months.append(date[1])
             self.years.append(date[2])
             self.hours.append(workTime)
+            self.logged.insert(0, 0)
         
         self.writeDataAndRefesh()
         
@@ -188,6 +200,7 @@ class Project(object):
                     self.months.pop(x)
                     self.years.pop(x)
                     self.hours.pop(x)
+                    self.logged.pop(x)
                     zeroFound = True
                     break;
             
@@ -222,5 +235,5 @@ class Project(object):
 ################################################################################
     
     def getData(self):
-        return (self.days, self.months, self.years, self.hours, self.cumulative)
+        return (self.days, self.months, self.years, self.hours, self.cumulative, self.logged)
         

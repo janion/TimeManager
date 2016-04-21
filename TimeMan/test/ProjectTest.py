@@ -33,7 +33,7 @@ class Test(unittest.TestCase):
     def testShouldPopulateDataAndWriteToFile(self):
         data = (1, 1, 2015, 1.02)
         project = Project(self.newName, data)
-        expected = ([1], [1], [2015], [1.02], [1.02])
+        expected = ([1], [1], [2015], [1.02], [1.02], [0])
         
         projectName = '%s%s%s' %(Constants.fileStart, self.newName, Constants.fileEnd)
         self.assertTrue(projectName in os.listdir(Constants.fileLocation))
@@ -51,7 +51,8 @@ class Test(unittest.TestCase):
         xYears = [2015, 2015]
         xHours = [0.01, 0.04]
         xCumulative = [0.01, 0.05]
-        expected = (xDays, xMonths, xYears, xHours, xCumulative)
+        xLogged = [0, 0]
+        expected = (xDays, xMonths, xYears, xHours, xCumulative, xLogged)
         
         self.assertEqual(expected, project.getData())
             
@@ -69,16 +70,17 @@ class Test(unittest.TestCase):
     def testShouldRecordSession(self):
         today = dt.date.today().strftime("%d-%m-%Y").split('-')
         today = [int(today[0]), int(today[1]), int(today[2])]
-        data = (1, 1, 2015, 1.02)
+        workTime = 2.73
+        data = (1, 1, 2015, 1.02, 0)
         
         project = Project(self.newName, data)
-        workTime = 2.73
         project.recordWorkSession(workTime)
         expected = ([data[0], today[0]],
                     [data[1], today[1]],
                     [data[2], today[2]],
                     [data[3], workTime],
-                    [data[3], data[3] + workTime]
+                    [data[3], data[3] + workTime],
+                    [data[4], data[4]]
                     )
         
         self.assertEqual(expected, project.getData())
@@ -90,7 +92,7 @@ class Test(unittest.TestCase):
     def testShouldNotRecordWorkSessionIfTooShort(self):
         data = (1, 1, 2015, 1.02)
         project = Project(self.newName, data)
-        expected = ([1], [1], [2015], [1.02], [1.02])
+        expected = ([1], [1], [2015], [1.02], [1.02], [0])
         
         project.recordWorkSession(0.004)
         self.assertEqual(expected, project.getData())
@@ -103,13 +105,14 @@ class Test(unittest.TestCase):
         data = (1, 1, 2015, 1.02)
         project = Project(self.newName, data)
         
-        (newDay, newMonth, newYear, newHour) = (2, 2, 2015, 2.34)
+        (newDay, newMonth, newYear, newHour, newLogged) = (2, 2, 2015, 2.34, 0)
         project.days.append(newDay)
         project.months.append(newMonth)
         project.years.append(newYear)
         project.hours.append(newHour)
+        project.logged.append(newLogged)
         
-        expected = ([data[0], newDay], [data[1], newMonth], [data[2], newYear], [data[3], newHour], [1.02, 3.36])
+        expected = ([data[0], newDay], [data[1], newMonth], [data[2], newYear], [data[3], newHour], [1.02, 3.36], [0, 0])
         project.writeDataAndRefesh()
         
         self.assertEqual(expected, project.getData())
@@ -135,7 +138,7 @@ class Test(unittest.TestCase):
         newHour = 2.34
         project.insertBackdate([data[0], data[1], data[2]], newHour)
         
-        expected = ([data[0]], [data[1]], [data[2]], [data[3] + newHour], [data[3] + newHour])
+        expected = ([data[0]], [data[1]], [data[2]], [data[3] + newHour], [data[3] + newHour], [0])
         
         self.assertEqual(expected, project.getData())
         
@@ -150,7 +153,7 @@ class Test(unittest.TestCase):
         (newDay, newMonth, newYear, newHour) = (2, 2, 2015, 2.34)
         project.insertBackdate([newDay, newMonth, newYear], newHour)
         
-        expected = ([data[0], newDay], [data[1], newMonth], [data[2], newYear], [data[3], newHour], [1.02, 3.36])
+        expected = ([data[0], newDay], [data[1], newMonth], [data[2], newYear], [data[3], newHour], [1.02, 3.36], [0, 0])
         
         self.assertEqual(expected, project.getData())
         
@@ -171,7 +174,8 @@ class Test(unittest.TestCase):
                     [data[1], newMonth2, newMonth1],
                     [data[2], newYear2, newYear1],
                     [data[3], newHour2, newHour1],
-                    [1.02, 3.36, 4.37]
+                    [1.02, 3.36, 4.37],
+                    [0, 0, 0]
                     )
         
         self.assertEqual(expected, project.getData())
@@ -187,7 +191,7 @@ class Test(unittest.TestCase):
         (newDay, newMonth, newYear, newHour) = (2, 2, 2014, 2.34)
         project.insertBackdate([newDay, newMonth, newYear], newHour)
         
-        expected = ([newDay, data[0]], [newMonth, data[1]], [newYear, data[2]], [newHour, data[3]], [2.34, 3.36])
+        expected = ([newDay, data[0]], [newMonth, data[1]], [newYear, data[2]], [newHour, data[3]], [2.34, 3.36], [0, 0])
         
         self.assertEqual(expected, project.getData())
         
@@ -202,11 +206,11 @@ class Test(unittest.TestCase):
         (newDay, newMonth, newYear, newHour) = (2, 2, 2014, 2.34)
         project.insertBackdate([newDay, newMonth, newYear], newHour)
         
-        expected = ([newDay, data[0]], [newMonth, data[1]], [newYear, data[2]], [newHour, data[3]], [2.34, 2.34])
+        expected = ([newDay, data[0]], [newMonth, data[1]], [newYear, data[2]], [newHour, data[3]], [2.34, 2.34], [0, 0])
         self.assertEqual(expected, project.getData())
         
         project.clearZeroHourEntries()
-        expected = ([newDay], [newMonth], [newYear], [newHour], [2.34])
+        expected = ([newDay], [newMonth], [newYear], [newHour], [2.34], [0])
         self.assertEqual(expected, project.getData())
         
         os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.newName, Constants.fileEnd))
@@ -217,7 +221,7 @@ class Test(unittest.TestCase):
         data = (1, 1, 2015, 0)
         project = Project(self.newName, data)
         
-        expected = ([data[0]], [data[1]], [data[2]], [data[3]], [0])
+        expected = ([data[0]], [data[1]], [data[2]], [data[3]], [0], [0])
         self.assertEqual(expected, project.getData())
         
         project.clearZeroHourEntries()

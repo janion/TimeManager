@@ -1,3 +1,6 @@
-Double click on project in main window to bring up data window???
+Archive function for projects which are finished but data won't be deleted
+	- move them to a data subfolder.
+	- toggle archived on and off
+	- dearchive function
 
 Merge branch back onto master

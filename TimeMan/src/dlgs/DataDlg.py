@@ -34,8 +34,8 @@ class DataWindow(wx.Dialog):
         #Add columns
         self.data_list.InsertColumn(0, "Date", width=80)
         self.data_list.InsertColumn(1, "hours", width=60)
-        self.data_list.InsertColumn(2, "Total hours", width=90)
-        self.data_list.InsertColumn(3, "Claimed", width=60)
+        self.data_list.InsertColumn(2, "Claimed", width=60)
+        self.data_list.InsertColumn(3, "Total hours", width=90)
         
         #Bind events
         self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
@@ -69,11 +69,11 @@ class DataWindow(wx.Dialog):
                 x, 1,("%d:%2d" %(int(hours[x]), int(round((hours[x]%1)*60))))
                 .replace(" ", "0")
                 )
+            self.data_list.SetStringItem(x, 2, str(logged[x]).replace("0", "N").replace("1", "Y"))
             self.data_list.SetStringItem(
-                x, 2, ("%d:%2d" %(int(cumulative[x]), int(round((cumulative[x]%1)*60))))
+                x, 3, ("%d:%2d" %(int(cumulative[x]), int(round((cumulative[x]%1)*60))))
                 .replace(" ", "0")
                 )
-            self.data_list.SetStringItem(x, 3, str(logged[x]).replace("0", "N").replace("1", "Y"))
         
         self.data_list.SetFocus()
 

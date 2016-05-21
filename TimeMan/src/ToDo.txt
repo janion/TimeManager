@@ -1,15 +1,4 @@
 - Archive function for projects which are finished but data won't be deleted
-	+ Move them to a data subfolder
-		+ Do so from GUI
-	+ Toggle archived on and off
-		+ Do so from GUI
-	+ Unarchive function
-		+ Do so from GUI
-	+ Store whether archived
-	+ Only allow view data of archived no other function
-	+ Modify set selection in various dialogs
-		+ Pass in project name then resolve on dialog side
-	+ Modify set selection for premade dialogs
 	- Mark archived projects somehow in table
 	- Test basic functionality
 
@@ -17,5 +6,5 @@
 	- Save archive/reactivation dates in data file
 	
 - Reform create project dialog
-	- When creating a new project only allow characters valid in a fiel name
+	- When creating a new project only allow characters valid in a field name
 	- Add maximum character count

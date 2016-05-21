@@ -32,10 +32,10 @@ class Test(unittest.TestCase):
     def testShouldFindProjectFromName(self):
         projectLogic = ProjectLogic()
         for name in projectLogic.getProjectNames():
-            project = projectLogic.getProjectFromName(name)
+            project = projectLogic._getProjectFromName(name)
             self.assertIsNotNone(project)
             
-        project = projectLogic.getProjectFromName('InvalidProjectName')
+        project = projectLogic._getProjectFromName('InvalidProjectName')
         self.assertIsNone(project)
             
 ################################################################################
@@ -80,7 +80,6 @@ class Test(unittest.TestCase):
                     "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
                     )
          
-        #(True, [days, months, years, hours], [maxx, maxx - minn])
         result = projectLogic.getBackdateType(projName, [1, 2, 2015], 1)
         
         self.assertEquals(result, ProjectLogic.BackdateType.UNIQUE)
@@ -102,7 +101,6 @@ class Test(unittest.TestCase):
                     "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
                     )
          
-        #(True, [days, months, years, hours], [maxx, maxx - minn])
         result = projectLogic.getBackdateType(projName, [1, 1, 2013], 1)
         
         self.assertEquals(result, ProjectLogic.BackdateType.HAS_ENTRY)
@@ -124,7 +122,6 @@ class Test(unittest.TestCase):
                     "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
                     )
          
-        #(True, [days, months, years, hours], [maxx, maxx - minn])
         result = projectLogic.getBackdateType(projName, [1, 2, 3015], 1)
         
         self.assertEquals(result, ProjectLogic.BackdateType.FUTURE)
@@ -146,7 +143,6 @@ class Test(unittest.TestCase):
                     "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
                     )
          
-        #(True, [days, months, years, hours], [maxx, maxx - minn])
         result = projectLogic.getBackdateType(projName, [1, 1, 2013], 23.99)
         
         self.assertEquals(result, ProjectLogic.BackdateType.SPILL_OVER)
@@ -158,18 +154,16 @@ class Test(unittest.TestCase):
 ################################################################################
     
     def testShouldCreateProjectFile(self):
-        
-        projectLogic = ProjectLogic()
+         
         origLocation = Constants.fileLocation
         Constants.fileLocation = 'testShouldCreateProjectFile\\'
         os.mkdir(Constants.fileLocation)
-        
-        projectLogic.findProjects()
-
+        projectLogic = ProjectLogic()
+ 
         for x in xrange(len(self.testDataFiles)):
             projectLogic.createNewProjectFile(self.testDataFiles[x], [1, 1, 2001], 5.55)
             self.assertEquals(self.testDataFiles[0:x+1], projectLogic.getProjectNames())
-        
+         
             (days, mnths, yrs, hrs, cumulative, logged) = projectLogic.getProjectData(self.testDataFiles[x])
             self.assertEquals(days, [1])
             self.assertEquals(mnths, [1])
@@ -177,7 +171,7 @@ class Test(unittest.TestCase):
             self.assertEquals(hrs, [5.55])
             self.assertEquals(cumulative, [5.55])
             self.assertEquals(logged, [0])
-        
+         
         for item in os.listdir(Constants.fileLocation):
             os.remove('%s%s' %(Constants.fileLocation, item))
         os.removedirs(Constants.fileLocation)

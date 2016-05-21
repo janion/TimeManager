@@ -3,5 +3,3 @@ Archive function for projects which are finished but data won't be deleted
 	- toggle archived on and off
 	- dearchive function
 	- store whether arhived and only allow view data of archived no other function
-
-Merge branch back onto master

@@ -89,7 +89,7 @@ class BackdateDlg(wx.Dialog):
                 prevHr = int(prevHours)
                 prevMin = int(round((prevHours - prevHr) * 60))
                 hr = int(workTime)
-                min = int(round((workTime - hr) * 60))
+                mins = int(round((workTime - hr) * 60))
                 
                 #Check if user wants to add on to time already recorded
                 dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
@@ -97,7 +97,7 @@ class BackdateDlg(wx.Dialog):
                                               'sure you want to log a ' +
                                               'further %d:%02d?'
                                               )
-                                       %(date[0], date[1], date[2], prevHr, prevMin, hr, min),
+                                       %(date[0], date[1], date[2], prevHr, prevMin, hr, mins),
                                        'Are you sure?', wx.YES_NO
                                        )
                 result = dlg.ShowModal()

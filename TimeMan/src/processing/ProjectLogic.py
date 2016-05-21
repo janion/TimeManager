@@ -20,18 +20,33 @@ class ProjectLogic():
         FUTURE = 3
         
     projects = []
+    archives = []
     showArchive = False;
 
     def __init__(self):
         # Create data folder if it doesn't exist
         if Constants.fileLocation.strip("\\") not in os.listdir(os.getcwd()):
-            os.mkdir(Constants.fileLocation)
-        self.findProjects()
+            os.makedirs(Constants.fileLocation)
+            
+        # Create archive folder if it doesn't exist
+        if not os.path.exists(Constants.archiveLocation):
+            os.makedirs(Constants.archiveLocation)
+            
+        self.projects = []
+        self._findProjects(Constants.fileLocation, self.projects, False)
+        self.archives = []
+        self._findProjects(Constants.archiveLocation, self.archives, True)
         
 ################################################################################
     
-    def getProjectFromName(self, name):
+    def _getProjectFromName(self, name):
+        # Look for project
         for project in self.projects:
+            if project.getName() == name:
+                return project
+        
+        # Look for archive
+        for project in self.archives:
             if project.getName() == name:
                 return project
         
@@ -39,26 +54,42 @@ class ProjectLogic():
         
 ################################################################################
     
-    def getProjectNames(self): #Find all projects in home folder
+    def getProjectNames(self, includeArchive = False): #Find all projects in home folder
         if len(self.projects) == 0:
-            self.findProjects()
+            self._findProjects(Constants.fileLocation, self.projects, False)
+            self._findProjects(Constants.arciveLocation, self.archives, True)
         
         names = []
         for project in self.projects:
+            names.append(project.getName())
+        if includeArchive:
+            for project in self.archives:
+                names.append(project.getName())
+        
+        return names
+        
+################################################################################
+    
+    def getArchivedProjectNames(self): #Find all projects in home folder
+        if len(self.projects) == 0:
+            self._findProjects(Constants.fileLocation, self.projects, False)
+            self._findProjects(Constants.arciveLocation, self.archives, True)
+        
+        names = []
+        for project in self.archives:
             names.append(project.getName())
         
         return names
         
 ################################################################################
     
-    def findProjects(self): #Find all projects in home folder
-        self.projects = []
+    def _findProjects(self, directory, ProjectList, isArchive): #Find all projects in home folder
         #Create list
-        for item in os.listdir(os.getcwd() + "\\" + Constants.fileLocation):
+        for item in os.listdir(os.getcwd() + "\\" + directory):
             #Look for project files in directory
             if (item.startswith(Constants.fileStart) and item.endswith(Constants.fileEnd)):
                 #Create project object
-                self.projects.append(Project(item.replace(Constants.fileStart, '').replace(Constants.fileEnd, '')))
+                ProjectList.append(Project(item.replace(Constants.fileStart, '').replace(Constants.fileEnd, ''), isArchive = isArchive))
         
 ################################################################################
         
@@ -66,18 +97,18 @@ class ProjectLogic():
         #Delete file
         os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, name, Constants.fileEnd))
         #Remove from list of projects
-        self.projects.remove(self.getProjectFromName(name))
+        self.projects.remove(self._getProjectFromName(name))
         
 ################################################################################
         
     def getProjectInfo(self, name):
-        project = self.getProjectFromName(name)
+        project = self._getProjectFromName(name)
         return ProjectInfo(project.getTotalTime(), project.getThisWeek(), project.getProjectStart(), project.getTotalDays())
 
 ################################################################################
     
     def getProjectData(self, name):
-        project = self.getProjectFromName(name)
+        project = self._getProjectFromName(name)
         return project.getData()
 
 ################################################################################
@@ -139,19 +170,19 @@ class ProjectLogic():
 ################################################################################
 
     def getHoursOnDate(self, name, date):
-        project = self.getProjectFromName(name)
+        project = self._getProjectFromName(name)
         return project.getHoursOnDate(date)
             
 ################################################################################
 
     def insertBackdate(self, name, date, workTime):
-        project = self.getProjectFromName(name)
+        project = self._getProjectFromName(name)
         project.insertBackdate(date, workTime)
             
 ################################################################################
 
     def recordSession(self, name, workTime):
-        project = self.getProjectFromName(name)
+        project = self._getProjectFromName(name)
         project.recordWorkSession(workTime)
             
 ################################################################################
@@ -168,13 +199,13 @@ class ProjectLogic():
 ################################################################################
 
     def setClaimedHours(self, projectName, claimedIndices):
-        project = self.getProjectFromName(projectName)
+        project = self._getProjectFromName(projectName)
         project.claimHours(claimedIndices)
             
 ################################################################################
 
     def getFormattedData(self, projectName):
-        project = self.getProjectFromName(projectName)
+        project = self._getProjectFromName(projectName)
         data = project.getData()
         
         fList = []
@@ -189,11 +220,48 @@ class ProjectLogic():
             
 ################################################################################
 
-    def archiveFile(self, projectName):
+#     def isArchive(self, projectName):
+#         for project in self.archives:
+#             if project.getName() == projectName:
+#                 return True
+#         
+#         return False
+            
+################################################################################
+
+    def setShowArchive(self, showArchive):
+        self.showArchive = showArchive
+            
+################################################################################
+
+    def getShowArchive(self):
+        return self.showArchive
+            
+################################################################################
+
+    def archiveProject(self, projectName):
+        # Move project file to archive folder
         source = '%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, projectName, Constants.fileEnd)
         destination = '%s%s%s%s' %(Constants.archiveLocation, Constants.fileStart, projectName, Constants.fileEnd)
-        shutil.move(source, destination)
-        if not self.showArchive:
-            self.projects.remove(projectName)
-        
+        if os.path.exists(source):
+            shutil.move(source, destination)
+            
+            # Move project name to archive list
+            project = self._getProjectFromName(projectName)
+            self.projects.remove(project)
+            self.archives.append(project)
+            
+################################################################################
+
+    def reactivateProject(self, projectName):
+        # Move project file to archive folder
+        source = '%s%s%s%s' %(Constants.archiveLocation, Constants.fileStart, projectName, Constants.fileEnd)
+        destination = '%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, projectName, Constants.fileEnd)
+        if os.path.exists(source):
+            shutil.move(source, destination)
+            
+            # Move project name to archive list
+            project = self._getProjectFromName(projectName)
+            self.archives.remove(project)
+            self.projects.append(project)
             

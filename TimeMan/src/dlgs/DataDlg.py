@@ -25,7 +25,7 @@ class DataWindow(wx.Dialog):
                       (10, 10)
                       )
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(230, -1),
-                                     choices=self.logic.getProjectNames()
+                                     choices=self.logic.getProjectNames(self.logic.getShowArchive())
                                      )
          
         #Open list ctrl to house data

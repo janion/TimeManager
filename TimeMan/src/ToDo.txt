@@ -1,5 +1,11 @@
 Archive function for projects which are finished but data won't be deleted
-	- move them to a data subfolder. Does shutil.copy() create a folder?
-	- toggle archived on and off
-	- dearchive function
-	- store whether arhived and only allow view data of archived no other function
+	+ Move them to a data subfolder
+		+ Do so from GUI
+	+ Toggle archived on and off
+		+ Do so from GUI
+	+ Unarchive function
+		+ Do so from GUI
+	+ Store whether archived
+	+ Only allow view data of archived no other function
+	- Modify set selection in various dialogs
+		- Pass in project name then resolve on dialog side

@@ -36,6 +36,9 @@ from processing.ProjectLogic import ProjectLogic as Logic
 ################################################################################
 
 class Window(wx.Frame):
+    
+    showArchive = False
+    
     def __init__(self, parent, idd, title):
         wx.Frame.__init__(self, parent, idd, title, size=(495, 350))
         self.panel = wx.Panel(self, -1)
@@ -57,7 +60,7 @@ class Window(wx.Frame):
 
         #Get information about each project and add to list ctrl
         for item in self.logic.getProjectNames():
-            self.getProjectInfo(item)
+            self.showProjectInfoInTable(item)
             
         self.setupMenu()
         self.createButtons()
@@ -118,6 +121,13 @@ class Window(wx.Frame):
         menu2.Append(204, "View data")
         self.menuBar.Append(menu2, "Project")
         
+        menu3 = wx.Menu()
+        menu3.Append(301, "Show archive", "", wx.ITEM_CHECK)
+        menu3.AppendSeparator()
+        menu3.Append(302, "Archive project")
+        menu3.Append(303, "Reactivate project")
+        self.menuBar.Append(menu3, "Archive")
+        
         self.SetMenuBar(self.menuBar)
         
         self.Bind(wx.EVT_MENU, self.newProject, id=101)
@@ -127,6 +137,9 @@ class Window(wx.Frame):
         self.Bind(wx.EVT_MENU, self.startWork, id=202)
         self.Bind(wx.EVT_MENU, self.claimHours, id=203)
         self.Bind(wx.EVT_MENU, self.openData, id=204)
+        self.Bind(wx.EVT_MENU, self.toggleArchive, id=301)
+        self.Bind(wx.EVT_MENU, self.archiveProject, id=302)
+        self.Bind(wx.EVT_MENU, self.reactivateProject, id=303)
         
 ################################################################################
         
@@ -186,8 +199,73 @@ class Window(wx.Frame):
         dlg.Destroy()
         
 ################################################################################
+    
+    def toggleArchive(self, event): #Remove a project from the program
+        self.logic.setShowArchive(event.IsChecked())
         
-    def getProjectInfo(self, item): #Find the relevant data from .csv files
+        self.proj_list.DeleteAllItems()
+        for name in self.logic.getProjectNames(self.logic.getShowArchive()):
+            self.showProjectInfoInTable(name)
+        
+################################################################################
+    
+    def archiveProject(self, event): #Archive a project from the program
+        #Open up selection dialog
+        dlg = wx.SingleChoiceDialog(self, 'Select a project to be archived',
+                                    'Archive project', self.logic.getProjectNames(),
+                                    wx.CHOICEDLG_STYLE
+                                    )
+        if (self.proj_list.GetFirstSelected() != -1):
+            dlg.SetSelection(self.proj_list.GetFirstSelected())
+
+        if dlg.ShowModal() == wx.ID_OK:
+            #Check user wants to delete project
+            name = dlg.GetStringSelection()
+            self.logic.archiveProject(name)
+            #Remove from listctrl
+            if not self.showArchive:
+                self.proj_list.DeleteItem(self.proj_list.FindItem(-1, name))
+            #Confirm to user successful deletion
+            dlg2 = wx.MessageDialog(self, 'Successfully archived: %s'
+                                    %name, 'Project archived', wx.OK
+                                    )
+            dlg2.ShowModal()
+            dlg2.Destroy()
+
+        #Close first dialog regardless of deletion or not
+        dlg.Destroy()
+        
+################################################################################
+    
+    def reactivateProject(self, event): #De-archive a project from the program
+        #Open up selection dialog
+        dlg = wx.SingleChoiceDialog(self, 'Select a project to be reactivated',
+                                    'Reactivate project', self.logic.getArchivedProjectNames(),
+                                    wx.CHOICEDLG_STYLE
+                                    )
+        if (self.proj_list.GetFirstSelected() != -1):
+            dlg.SetSelection(self.proj_list.GetFirstSelected())
+
+        if dlg.ShowModal() == wx.ID_OK:
+            #Check user wants to delete project
+            name = dlg.GetStringSelection()
+            self.logic.reactivateProject(name)
+            #Add to listctrl
+            if not self.showArchive:
+                self.showProjectInfoInTable(name)
+            #Confirm to user successful deletion
+            dlg2 = wx.MessageDialog(self, 'Successfully reactivated: %s'
+                                    %name, 'Project archived', wx.OK
+                                    )
+            dlg2.ShowModal()
+            dlg2.Destroy()
+
+        #Close first dialog regardless of deletion or not
+        dlg.Destroy()
+        
+################################################################################
+        
+    def showProjectInfoInTable(self, item): #Find the relevant data from .csv files
         # Get project information
         projInfo = self.logic.getProjectInfo(item)
         tot = projInfo.getTotalTime()

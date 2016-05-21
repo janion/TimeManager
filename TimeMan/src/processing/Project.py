@@ -22,7 +22,7 @@ class Project(object):
     thisWeek = None
     totalDays = None
 
-    def __init__(self, name, data = None):
+    def __init__(self, name, data = None, isArchive = False):
         self.name = name
         self.days = []
         self.months = []
@@ -43,7 +43,7 @@ class Project(object):
             self.logged.append(0)
             self.writeDataAndRefesh()
         else:
-            (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile()
+            (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile(isArchive)
             self.findProjectInfo()
         
 ################################################################################
@@ -68,8 +68,13 @@ class Project(object):
         
 ################################################################################
 
-    def readFile(self): #Find all the entries in a file
-        with open('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.name, Constants.fileEnd), 'rb') as csvfile:
+    def readFile(self, isArchive): #Find all the entries in a file
+        if not isArchive:
+            fileName = '%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, self.name, Constants.fileEnd)
+        else:
+            fileName = '%s%s%s%s' %(Constants.archiveLocation, Constants.fileStart, self.name, Constants.fileEnd)
+            
+        with open(fileName, 'rb') as csvfile:
             r1 = csv.reader(csvfile, delimiter=',')
             
             #Declare empty lists
@@ -122,7 +127,7 @@ class Project(object):
         
     def writeDataAndRefesh(self):
         self.writeDataToFile()
-        (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile()
+        (self.days, self.months, self.years, self.hours, self.cumulative, self.logged) = self.readFile(False)
         self.findProjectInfo()
             
 ################################################################################

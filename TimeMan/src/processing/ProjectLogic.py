@@ -5,6 +5,7 @@ Created on 9 Apr 2016
 '''
 
 import os
+import shutil
 import datetime as dt
 import Constants
 from Project import Project
@@ -19,6 +20,7 @@ class ProjectLogic():
         FUTURE = 3
         
     projects = []
+    showArchive = False;
 
     def __init__(self):
         # Create data folder if it doesn't exist
@@ -184,4 +186,14 @@ class ProjectLogic():
             states.append(bool(data[5][x]))
         
         return (fList, states)
+            
+################################################################################
+
+    def archiveFile(self, projectName):
+        source = '%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, projectName, Constants.fileEnd)
+        destination = '%s%s%s%s' %(Constants.archiveLocation, Constants.fileStart, projectName, Constants.fileEnd)
+        shutil.move(source, destination)
+        if not self.showArchive:
+            self.projects.remove(projectName)
+        
             

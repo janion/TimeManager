@@ -1,6 +1,7 @@
 Archive function for projects which are finished but data won't be deleted
-	- move them to a data subfolder.
+	- move them to a data subfolder. Does shutil.copy() create a folder?
 	- toggle archived on and off
 	- dearchive function
+	- store whether arhived and only allow view data of archived no other function
 
 Merge branch back onto master

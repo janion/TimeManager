@@ -8,7 +8,7 @@ import wx
 
 class ClaimedHoursDlg(wx.Dialog):
     
-    def __init__(self, parent, idd, logic, index=-1):        
+    def __init__(self, parent, idd, logic, projectName):        
         wx.Dialog.__init__(self, parent, idd, "Claim hours", size=(300, 300),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
                            )
@@ -21,8 +21,9 @@ class ClaimedHoursDlg(wx.Dialog):
         wx.StaticText(self.panel, -1, "Please select the project to view:",
                       (10, 10)
                       )
+        projectList = self.logic.getProjectNames()
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(230, -1),
-                                     choices=self.logic.getProjectNames()
+                                     choices=projectList
                                      )
         
         
@@ -37,9 +38,11 @@ class ClaimedHoursDlg(wx.Dialog):
         self.Bind(wx.EVT_BUTTON, self.save, self.saveBtn)
         self.Bind(wx.EVT_BUTTON, self.close, self.cancelBtn)
         
-        if index != -1:
-            self.proj_choice.SetSelection(index)
-            self.populateList(None)
+        for x in xrange(len(projectList)):
+            if projectList[x] == projectName:
+                self.proj_choice.SetSelection(x)
+                self.populateList(None)
+                break
 
 ################################################################################
     

@@ -9,7 +9,7 @@ import wx
 import time
 
 class WorkSessionDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic, index = -1):        
+    def __init__(self, parent, idd, logic, projectName):        
         wx.Dialog.__init__(self, parent, idd, 'Work session', size=(250, 140))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
@@ -20,8 +20,9 @@ class WorkSessionDlg(wx.Dialog):
         wx.StaticText(self.panel, -1, "Please select the project to work on:",
                       (10, 10)
                       )
+        projectList = self.logic.getProjectNames()
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(225, -1),
-                                     choices=self.logic.getProjectNames()
+                                     choices=projectList
                                      )
         #Create timer label
         self.timer_text = wx.StaticText(self.panel, -1,
@@ -44,9 +45,11 @@ class WorkSessionDlg(wx.Dialog):
         
         self.Bind(wx.EVT_TIMER, self.OnTimer)
         
-        if index != -1:
-            self.proj_choice.SetSelection(index)
-            self.ProjectSelected(None)
+        for x in xrange(len(projectList)):
+            if projectList[x] == projectName:
+                self.proj_choice.SetSelection(x)
+                self.ProjectSelected(None)
+                break
 
 ################################################################################
 

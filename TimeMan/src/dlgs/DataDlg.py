@@ -11,7 +11,7 @@ import Config
 
 class DataWindow(wx.Dialog):
     
-    def __init__(self, parent, idd, logic, index=-1):        
+    def __init__(self, parent, idd, logic, projectName):        
         wx.Dialog.__init__(self, parent, idd, "View data", size=(330, 440),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER
                            )
@@ -24,8 +24,9 @@ class DataWindow(wx.Dialog):
         wx.StaticText(self.panel, -1, "Please select the project to view:",
                       (10, 10)
                       )
+        projectList = self.logic.getProjectNames(self.logic.getShowArchive())
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(230, -1),
-                                     choices=self.logic.getProjectNames(self.logic.getShowArchive())
+                                     choices=projectList
                                      )
          
         #Open list ctrl to house data
@@ -41,9 +42,11 @@ class DataWindow(wx.Dialog):
         self.Bind(wx.EVT_CHOICE, self.populateTable, self.proj_choice)
         self.Bind(wx.EVT_SIZE, self.resize)
         
-        if index != -1:
-            self.proj_choice.SetSelection(index)
-            self.populateTable(None)
+        for x in xrange(len(projectList)):
+            if projectList[x] == projectName:
+                self.proj_choice.SetSelection(x)
+                self.populateTable(None)
+                break
 
 ################################################################################
     

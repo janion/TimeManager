@@ -156,26 +156,47 @@ class Window(wx.Frame):
         
     def backDate(self, event): #Add time entries without real time recording
         #Open backdating dialog
-        dlg = BackdateDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
+        index = self.proj_list.GetFirstSelected()
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+        
+        dlg = BackdateDlg(self, -1, self.logic, projectName)
         dlg.ShowModal()
         
 ################################################################################
         
     def claimHours(self, event): #Add time entries without real time recording
         #Open hour claiming dialog
-        dlg = ClaimedHoursDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
+        index = self.proj_list.GetFirstSelected()
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+        
+        dlg = ClaimedHoursDlg(self, -1, self.logic, projectName)
         dlg.ShowModal()
         
 ################################################################################
     
     def closeProject(self, event): #Remove a project from the program
+        index = self.proj_list.GetFirstSelected()
+        projectNames = self.logic.getProjectNames()
+        
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+        
         #Open up selection dialog
         dlg = wx.SingleChoiceDialog(self, 'Select a project to be deleted',
-                                    'Delete project', self.logic.getProjectNames(),
+                                    'Delete project', projectNames,
                                     wx.CHOICEDLG_STYLE
                                     )
-        if (self.proj_list.GetFirstSelected() != -1):
-            dlg.SetSelection(self.proj_list.GetFirstSelected())
+        for x in xrange(len(projectNames)):
+            if projectNames[x] == projectName:
+                dlg.SetSelection(x)
 
         if dlg.ShowModal() == wx.ID_OK:
             #Check user wants to delete project
@@ -210,13 +231,22 @@ class Window(wx.Frame):
 ################################################################################
     
     def archiveProject(self, event): #Archive a project from the program
+        index = self.proj_list.GetFirstSelected()
+        projectNames = self.logic.getProjectNames()
+        
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+            
         #Open up selection dialog
         dlg = wx.SingleChoiceDialog(self, 'Select a project to be archived',
-                                    'Archive project', self.logic.getProjectNames(),
+                                    'Archive project', projectNames,
                                     wx.CHOICEDLG_STYLE
                                     )
-        if (self.proj_list.GetFirstSelected() != -1):
-            dlg.SetSelection(self.proj_list.GetFirstSelected())
+        for x in xrange(len(projectNames)):
+            if projectNames[x] == projectName:
+                dlg.SetSelection(x)
 
         if dlg.ShowModal() == wx.ID_OK:
             #Check user wants to delete project
@@ -238,13 +268,22 @@ class Window(wx.Frame):
 ################################################################################
     
     def reactivateProject(self, event): #De-archive a project from the program
+        index = self.proj_list.GetFirstSelected()
+        projectNames = self.logic.getArchivedProjectNames()
+        
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+            
         #Open up selection dialog
         dlg = wx.SingleChoiceDialog(self, 'Select a project to be reactivated',
-                                    'Reactivate project', self.logic.getArchivedProjectNames(),
+                                    'Reactivate project', projectNames,
                                     wx.CHOICEDLG_STYLE
                                     )
-        if (self.proj_list.GetFirstSelected() != -1):
-            dlg.SetSelection(self.proj_list.GetFirstSelected())
+        for x in xrange(len(projectNames)):
+            if projectNames[x] == projectName:
+                dlg.SetSelection(x)
 
         if dlg.ShowModal() == wx.ID_OK:
             #Check user wants to delete project
@@ -308,7 +347,13 @@ class Window(wx.Frame):
         
     def openData(self, event): #Show user data for the selected project
         #Open data dialog
-        data_window = DataWindow(self, -1, self.logic, self.proj_list.GetFirstSelected())
+        index = self.proj_list.GetFirstSelected()
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+        
+        data_window = DataWindow(self, -1, self.logic, projectName)
         data_window.Show()
 
 ################################################################################
@@ -324,5 +369,11 @@ class Window(wx.Frame):
         
     def startWork(self, event): #Allow user to record a work session
         #Open work session dialog
-        dlg = WorkSessionDlg(self, -1, self.logic, self.proj_list.GetFirstSelected())
+        index = self.proj_list.GetFirstSelected()
+        if index != -1:
+            projectName = self.proj_list.GetItemText(index)
+        else:
+            projectName = ""
+        
+        dlg = WorkSessionDlg(self, -1, self.logic, projectName)
         dlg.ShowModal()

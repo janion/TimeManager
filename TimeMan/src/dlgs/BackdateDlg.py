@@ -10,7 +10,7 @@ Created on Mon Sep 21 14:59:28 2015
 import wx
 
 class BackdateDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic, index = -1):
+    def __init__(self, parent, idd, logic, projectName):
         wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
         self.parent = parent
         self.panel = wx.Panel(self, -1)
@@ -21,8 +21,9 @@ class BackdateDlg(wx.Dialog):
         wx.StaticText(self.panel, -1,
                       "Please select the project to back date:", (10, 10)
                       )
+        projectList = self.logic.getProjectNames()
         self.proj_choice = wx.Choice(self.panel, pos=(10, 30), size=(225, -1),
-                                     choices=self.logic.getProjectNames()
+                                     choices=projectList
                                      )
         #Create text and date picker
         wx.StaticText(self.panel, -1, "Select date:", (10, 60))
@@ -49,17 +50,19 @@ class BackdateDlg(wx.Dialog):
         self.cancel_btn = wx.Button(self.panel, -1, 'Done', pos=(150, 110))
         
         #Bind events
-        self.Bind(wx.EVT_CHOICE, self.ProjectSelected, self.proj_choice)
-        self.Bind(wx.EVT_BUTTON, self.BackDate, self.log_btn)
-        self.Bind(wx.EVT_BUTTON, self.Close, self.cancel_btn)
+        self.Bind(wx.EVT_CHOICE, self.projectSelected, self.proj_choice)
+        self.Bind(wx.EVT_BUTTON, self.backDate, self.log_btn)
+        self.Bind(wx.EVT_BUTTON, self.close, self.cancel_btn)
         
-        if index != -1:
-            self.proj_choice.SetSelection(index)
-            self.ProjectSelected(None)
+        for x in xrange(len(projectList)):
+            if projectList[x] == projectName:
+                self.proj_choice.SetSelection(x)
+                self.projectSelected(None)
+                break
         
 ################################################################################
 
-    def BackDate(self, event): #Check date is valid then write to file
+    def backDate(self, event): #Check date is valid then write to file
         #Get date from the picker and convert to British format
         date = str(self.date.GetValue())[:8].split('/')
         date[2] = int('20' + date[2])
@@ -142,11 +145,11 @@ class BackdateDlg(wx.Dialog):
         
 ################################################################################
 
-    def Close(self, event):
+    def close(self, event):
         self.Destroy()
         
 ################################################################################
 
-    def ProjectSelected(self, event): #Enable backdate button
+    def projectSelected(self, event): #Enable backdate button
         self.log_btn.Enable(True)
         

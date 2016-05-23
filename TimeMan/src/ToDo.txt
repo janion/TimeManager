@@ -1,10 +1,8 @@
-- Archive function for projects which are finished but data won't be deleted
-	- Mark archived projects somehow in table
-	- Test basic functionality
-
 - Make duration field in table not include archive times?
 	- Save archive/reactivation dates in data file
 	
 - Reform create project dialog
 	- When creating a new project only allow characters valid in a field name
 	- Add maximum character count
+
+- Be able to close an archived project without first reactivating it

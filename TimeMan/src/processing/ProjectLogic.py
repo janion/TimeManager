@@ -19,9 +19,9 @@ class ProjectLogic():
         SPILL_OVER = 2
         FUTURE = 3
         
-    projects = []
-    archives = []
-    showArchive = False;
+    _projects = []
+    _archives = []
+    _showArchive = False;
 
     def __init__(self):
         # Create data folder if it doesn't exist
@@ -32,21 +32,21 @@ class ProjectLogic():
         if not os.path.exists(Constants.archiveLocation):
             os.makedirs(Constants.archiveLocation)
             
-        self.projects = []
-        self._findProjects(Constants.fileLocation, self.projects, False)
-        self.archives = []
-        self._findProjects(Constants.archiveLocation, self.archives, True)
+        self._projects = []
+        self._findProjects(Constants.fileLocation, self._projects, False)
+        self._archives = []
+        self._findProjects(Constants.archiveLocation, self._archives, True)
         
 ################################################################################
     
     def _getProjectFromName(self, name):
         # Look for project
-        for project in self.projects:
+        for project in self._projects:
             if project.getName() == name:
                 return project
         
         # Look for archive
-        for project in self.archives:
+        for project in self._archives:
             if project.getName() == name:
                 return project
         
@@ -55,15 +55,15 @@ class ProjectLogic():
 ################################################################################
     
     def getProjectNames(self, includeArchive = False): #Find all projects in home folder
-        if len(self.projects) == 0:
-            self._findProjects(Constants.fileLocation, self.projects, False)
-            self._findProjects(Constants.arciveLocation, self.archives, True)
+        if len(self._projects) == 0:
+            self._findProjects(Constants.fileLocation, self._projects, False)
+            self._findProjects(Constants.arciveLocation, self._archives, True)
         
         names = []
-        for project in self.projects:
+        for project in self._projects:
             names.append(project.getName())
         if includeArchive:
-            for project in self.archives:
+            for project in self._archives:
                 names.append(project.getName())
         
         return names
@@ -71,12 +71,12 @@ class ProjectLogic():
 ################################################################################
     
     def getArchivedProjectNames(self): #Find all projects in home folder
-        if len(self.projects) == 0:
-            self._findProjects(Constants.fileLocation, self.projects, False)
-            self._findProjects(Constants.arciveLocation, self.archives, True)
+        if len(self._projects) == 0:
+            self._findProjects(Constants.fileLocation, self._projects, False)
+            self._findProjects(Constants.arciveLocation, self._archives, True)
         
         names = []
-        for project in self.archives:
+        for project in self._archives:
             names.append(project.getName())
         
         return names
@@ -97,7 +97,7 @@ class ProjectLogic():
         #Delete file
         os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, name, Constants.fileEnd))
         #Remove from list of projects
-        self.projects.remove(self._getProjectFromName(name))
+        self._projects.remove(self._getProjectFromName(name))
         
 ################################################################################
         
@@ -188,12 +188,12 @@ class ProjectLogic():
 ################################################################################
 
     def createNewProjectFile(self, name, date, workTime):
-        self.projects.append(Project(name, (date[0], date[1], date[2], workTime)))
+        self._projects.append(Project(name, (date[0], date[1], date[2], workTime)))
             
 ################################################################################
 
     def cleanProjectFiles(self):
-        for project in self.projects:
+        for project in self._projects:
             project.clearZeroHourEntries()
             
 ################################################################################
@@ -220,22 +220,22 @@ class ProjectLogic():
             
 ################################################################################
 
-#     def isArchive(self, projectName):
-#         for project in self.archives:
-#             if project.getName() == projectName:
-#                 return True
-#         
-#         return False
+    def isArchive(self, projectName):
+        for project in self._archives:
+            if project.getName() == projectName:
+                return True
+         
+        return False
             
 ################################################################################
 
     def setShowArchive(self, showArchive):
-        self.showArchive = showArchive
+        self._showArchive = showArchive
             
 ################################################################################
 
     def getShowArchive(self):
-        return self.showArchive
+        return self._showArchive
             
 ################################################################################
 
@@ -248,8 +248,8 @@ class ProjectLogic():
             
             # Move project name to archive list
             project = self._getProjectFromName(projectName)
-            self.projects.remove(project)
-            self.archives.append(project)
+            self._projects.remove(project)
+            self._archives.append(project)
             
 ################################################################################
 
@@ -262,6 +262,6 @@ class ProjectLogic():
             
             # Move project name to archive list
             project = self._getProjectFromName(projectName)
-            self.archives.remove(project)
-            self.projects.append(project)
+            self._archives.remove(project)
+            self._projects.append(project)
             

@@ -221,9 +221,13 @@ class Window(wx.Frame):
         
 ################################################################################
     
-    def toggleArchive(self, event): #Remove a project from the program
+    def toggleArchive(self, event):
         self.logic.setShowArchive(event.IsChecked())
+        self.resetTable()
         
+################################################################################
+    
+    def resetTable(self):
         self.proj_list.DeleteAllItems()
         for name in self.logic.getProjectNames(self.logic.getShowArchive()):
             self.showProjectInfoInTable(name)
@@ -252,9 +256,9 @@ class Window(wx.Frame):
             #Check user wants to delete project
             name = dlg.GetStringSelection()
             self.logic.archiveProject(name)
-            #Remove from listctrl
-            if not self.showArchive:
-                self.proj_list.DeleteItem(self.proj_list.FindItem(-1, name))
+            
+            self.resetTable()
+            
             #Confirm to user successful deletion
             dlg2 = wx.MessageDialog(self, 'Successfully archived: %s'
                                     %name, 'Project archived', wx.OK
@@ -289,9 +293,9 @@ class Window(wx.Frame):
             #Check user wants to delete project
             name = dlg.GetStringSelection()
             self.logic.reactivateProject(name)
-            #Add to listctrl
-            if not self.showArchive:
-                self.showProjectInfoInTable(name)
+            
+            self.resetTable()
+            
             #Confirm to user successful deletion
             dlg2 = wx.MessageDialog(self, 'Successfully reactivated: %s'
                                     %name, 'Project archived', wx.OK
@@ -304,13 +308,17 @@ class Window(wx.Frame):
         
 ################################################################################
         
-    def showProjectInfoInTable(self, item): #Find the relevant data from .csv files
+    def showProjectInfoInTable(self, projectName): #Find the relevant data from .csv files
         # Get project information
-        projInfo = self.logic.getProjectInfo(item)
+        projInfo = self.logic.getProjectInfo(projectName)
         tot = projInfo.getTotalTime()
         this_week = projInfo.getThisWeek()
         proj_start = projInfo.getProjStart()
         tot_days = projInfo.getTotalDays()
+        
+        # Mark archived
+        if self.logic.isArchive(projectName):
+            projectName = "*" + projectName
          
         #Change total times from decimal hours to time format
         tot_f = "%d:%02d" %(int(tot), int(round((tot % 1) * 60)))
@@ -319,20 +327,20 @@ class Window(wx.Frame):
                                  )
         
         # Update table to show project
-        if self.proj_list.FindItem(-1,item) == -1:
+        if self.proj_list.FindItem(-1, projectName) == -1:
             #If project is not currently in the list ctrl then create an entry
             index = self.proj_list.GetItemCount()
-            self.proj_list.InsertStringItem(index, item)
+            self.proj_list.InsertStringItem(index, projectName)
             #Then populate that list item
-            self.populateList(item, tot_f, this_week_f,
+            self.populateList(projectName, tot_f, this_week_f,
                               proj_start.strftime("%d-%m-%Y"), str(tot_days),
                               index
                               )
         else:
             #Else overwrite current entry
-            self.populateList(item, tot_f, this_week_f,
+            self.populateList(projectName, tot_f, this_week_f,
                               proj_start.strftime("%d-%m-%Y"), str(tot_days),
-                              self.proj_list.FindItem(-1, item)
+                              self.proj_list.FindItem(-1, projectName)
                               )
                 
 ################################################################################
@@ -349,7 +357,7 @@ class Window(wx.Frame):
         #Open data dialog
         index = self.proj_list.GetFirstSelected()
         if index != -1:
-            projectName = self.proj_list.GetItemText(index)
+            projectName = self.proj_list.GetItemText(index).strip("*")
         else:
             projectName = ""
         

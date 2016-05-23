@@ -178,6 +178,40 @@ class Test(unittest.TestCase):
         Constants.fileLocation = origLocation
             
 ################################################################################
+    
+    def testShouldGetArchivedProjectNames(self):
+        projectLogic = ProjectLogic()
+        
+        self.assertEqual(["test3", "test4"], projectLogic.getArchivedProjectNames())
+            
+################################################################################
+    
+    def testShouldIdentifyArchivedProject(self):
+        projectLogic = ProjectLogic()
+        
+        self.assertTrue(projectLogic.isArchive("test3"))
+        self.assertFalse(projectLogic.isArchive("test2"))
+            
+################################################################################
+    
+    def testShouldArchiveAndRectivateProject(self):
+        projectLogic = ProjectLogic()
+        project = "test0"
+        
+        self.assertTrue(os.path.exists(Constants.fileLocation + Constants.fileStart + project + Constants.fileEnd))
+        self.assertFalse(os.path.exists(Constants.archiveLocation + Constants.fileStart + project + Constants.fileEnd))
+        
+        projectLogic.archiveProject(project)
+        
+        self.assertTrue(os.path.exists(Constants.archiveLocation + Constants.fileStart + project + Constants.fileEnd))
+        self.assertFalse(os.path.exists(Constants.fileLocation + Constants.fileStart + project + Constants.fileEnd))
+        
+        projectLogic.reactivateProject(project)
+        
+        self.assertTrue(os.path.exists(Constants.fileLocation + Constants.fileStart + project + Constants.fileEnd))
+        self.assertFalse(os.path.exists(Constants.archiveLocation + Constants.fileStart + project + Constants.fileEnd))
+            
+################################################################################
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,8 +5,6 @@ Created on Mon Sep 21 14:59:28 2015
 @author: erik_
 """
 
-# Need InsertBackDate() method factoring into logic
-
 import wx
 
 class BackdateDlg(wx.Dialog):
@@ -27,9 +25,9 @@ class BackdateDlg(wx.Dialog):
                                      )
         #Create text and date picker
         wx.StaticText(self.panel, -1, "Select date:", (10, 60))
-        self.date = wx.GenericDatePickerCtrl(self.panel, size=(100, -1),
-                                             pos=(10, 80)
-                                             )
+        self.datePicker = wx.DatePickerCtrl(self.panel, size=(100, -1), pos=(10, 80),
+                                      style = wx.DP_DROPDOWN | wx.DP_SHOWCENTURY
+                                      )
         #Create text and time input boxes
         wx.StaticText(self.panel, -1, "Hours:", (120, 60))
         self.hours = wx.SpinCtrl(self.panel, -1, "", pos=(120, 80),
@@ -63,12 +61,9 @@ class BackdateDlg(wx.Dialog):
 ################################################################################
 
     def backDate(self, event): #Check date is valid then write to file
-        #Get date from the picker and convert to British format
-        date = str(self.date.GetValue())[:8].split('/')
-        date[2] = int('20' + date[2])
-        temp = int(date[1])
-        date[1] = int(date[0])
-        date[0] = temp
+        #Get date from the picker
+        date = self.datePicker.GetValue()
+        dateArray = [date.GetDay(), date.GetMonth() + 1, date.GetYear()]
         
         workTime = (self.hours.GetValue() +
                     (float(self.mins.GetValue())/60)
@@ -77,18 +72,18 @@ class BackdateDlg(wx.Dialog):
         if workTime > 0:
             name = self.proj_choice.GetStringSelection()
             # Get backdate type
-            result = self.logic.getBackdateType(name, date, workTime)
+            result = self.logic.getBackdateType(name, dateArray, workTime)
     
             if result == self.logic.BackdateType.UNIQUE:
-                self.logic.insertBackdate(name, date, workTime)
+                self.logic.insertBackdate(name, dateArray, workTime)
                 dlg = wx.MessageDialog(self, 'Successfully backdated',
                                        'Success', wx.OK
                                        )
                 dlg.ShowModal()
-                self.parent.getProjectInfo(name)
+                self.parent.showProjectInfoInTable(name)
                 
             elif result == self.logic.BackdateType.HAS_ENTRY:
-                prevHours = self.logic.getHoursOnDate(name, date)
+                prevHours = self.logic.getHoursOnDate(name, dateArray)
                 prevHr = int(prevHours)
                 prevMin = int(round((prevHours - prevHr) * 60))
                 hr = int(workTime)
@@ -100,16 +95,16 @@ class BackdateDlg(wx.Dialog):
                                               'sure you want to log a ' +
                                               'further %d:%02d?'
                                               )
-                                       %(date[0], date[1], date[2], prevHr, prevMin, hr, mins),
+                                       %(dateArray[0], dateArray[1], dateArray[2], prevHr, prevMin, hr, mins),
                                        'Are you sure?', wx.YES_NO
                                        )
                 result = dlg.ShowModal()
                 if result == wx.ID_YES:
                     self.logic.insertBackdate(name, date, workTime)
-                    self.parent.getProjectInfo(name)
+                    self.parent.showProjectInfoInTable(name)
                     
             elif result == self.logic.BackdateType.SPILL_OVER:
-                prevHours = self.logic.getHoursOnDate(name, date)
+                prevHours = self.logic.getHoursOnDate(name, dateArray)
                 prevHr = int(prevHours)
                 prevMin = int(round((prevHours - prevHr) * 60))
                 dlg = wx.MessageDialog(self, ('%02d/%02d/%d already has %d:%02d' +
@@ -117,7 +112,7 @@ class BackdateDlg(wx.Dialog):
                                               'log more than 24 hours on ' +
                                               'a single day.'
                                               )
-                                       %(date[0], date[1], date[2], prevHr, prevMin),
+                                       %(dateArray[0], dateArray[1], dateArray[2], prevHr, prevMin),
                                        'Invalid time', wx.OK
                                        )
                 result = dlg.ShowModal()

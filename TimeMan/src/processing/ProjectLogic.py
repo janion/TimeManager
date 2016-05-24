@@ -7,6 +7,7 @@ Created on 9 Apr 2016
 import os
 import shutil
 import datetime as dt
+import string
 import Constants
 from Project import Project
 from ProjectInfo import ProjectInfo
@@ -18,6 +19,9 @@ class ProjectLogic():
         HAS_ENTRY = 1
         SPILL_OVER = 2
         FUTURE = 3
+    
+    __validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    __charLimit = 25
         
     _projects = []
     _archives = []
@@ -57,7 +61,7 @@ class ProjectLogic():
     def getProjectNames(self, includeArchive = False): #Find all projects in home folder
         if len(self._projects) == 0:
             self._findProjects(Constants.fileLocation, self._projects, False)
-            self._findProjects(Constants.arciveLocation, self._archives, True)
+            self._findProjects(Constants.archiveLocation, self._archives, True)
         
         names = []
         for project in self._projects:
@@ -73,7 +77,7 @@ class ProjectLogic():
     def getArchivedProjectNames(self): #Find all projects in home folder
         if len(self._projects) == 0:
             self._findProjects(Constants.fileLocation, self._projects, False)
-            self._findProjects(Constants.arciveLocation, self._archives, True)
+            self._findProjects(Constants.archiveLocation, self._archives, True)
         
         names = []
         for project in self._archives:
@@ -151,11 +155,7 @@ class ProjectLogic():
         today = [int(today[0]), int(today[1]), int(today[2])]
              
         #Check date is today or earlier
-        if ((date[2] < today[2]) or
-            (date[2] == today[2] and date[1] < today[1]) or
-            (date[2] == today[2] and date[1] == today[1] and
-             date[0] <= today[0])
-            ):
+        if self.isDateValid(date):
             timeOnDate = self.getHoursOnDate(name, date)
             
             if timeOnDate == None:
@@ -166,6 +166,37 @@ class ProjectLogic():
                 return self.BackdateType.HAS_ENTRY
         else:
             return self.BackdateType.FUTURE
+            
+################################################################################
+
+    def isDateValid(self, date):
+            #Get today's date
+            today = dt.date.today().strftime("%d-%m-%Y").split('-')
+            today = [int(today[0]), int(today[1]), int(today[2])]
+                
+            #Check date is today or earlier
+            if ((date[2] < today[2]) or
+                (date[2] == today[2] and date[1] < today[1]) or
+                (date[2] == today[2] and date[1] == today[1] and
+                 date[0] <= today[0])
+                ):
+                return True
+            else:
+                return False
+            
+################################################################################
+
+    def isValidProjectName(self, name):
+        for character in name:
+            if character not in self.__validFilenameChars:
+                return False
+        
+        return True
+            
+################################################################################
+
+    def isUniqueProjectName(self, name):
+        return name not in self.getProjectNames(True)
             
 ################################################################################
 
@@ -264,4 +295,9 @@ class ProjectLogic():
             project = self._getProjectFromName(projectName)
             self._archives.remove(project)
             self._projects.append(project)
+            
+################################################################################
+
+    def getProjectNameLimit(self):
+        return Constants.projectNameLimit
             

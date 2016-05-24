@@ -70,7 +70,7 @@ class WorkSessionDlg(wx.Dialog):
                     
         #Update list ctrl in main window
         if self.end_time != self.start_time:
-            self.parent.getProjectInfo(name)
+            self.parent.showProjectInfoInTable(name)
 
 ################################################################################
 

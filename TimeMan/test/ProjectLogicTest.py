@@ -212,6 +212,35 @@ class Test(unittest.TestCase):
         self.assertFalse(os.path.exists(Constants.archiveLocation + Constants.fileStart + project + Constants.fileEnd))
             
 ################################################################################
+    
+    def testShouldIdentifyInvalidProjectName(self):
+        projectLogic = ProjectLogic()
+        
+        self.assertTrue(projectLogic.isValidProjectName("Test"))
+        
+        self.assertFalse(projectLogic.isValidProjectName("Te*st"))
+        self.assertFalse(projectLogic.isValidProjectName("Tes&t"))
+        self.assertFalse(projectLogic.isValidProjectName("Test@"))
+            
+################################################################################
+    
+    def testShouldIdentifyInUseProjectName(self):
+        projectLogic = ProjectLogic()
+        self.assertFalse(projectLogic.isUniqueProjectName("test0"))
+            
+################################################################################
+    
+    def testShouldIdentifyInUseArchivedProjectName(self):
+        projectLogic = ProjectLogic()
+        self.assertFalse(projectLogic.isUniqueProjectName("test4"))
+            
+################################################################################
+    
+    def testShouldIdentifyAvailableProjectName(self):
+        projectLogic = ProjectLogic()
+        self.assertTrue(projectLogic.isUniqueProjectName("test400"))
+            
+################################################################################
 
 if __name__ == "__main__":
     unittest.main()

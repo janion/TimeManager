@@ -8,3 +8,4 @@ fileLocation = 'data\\'
 archiveLocation = fileLocation + 'archive\\'
 fileStart = 'Project_man_'
 fileEnd = '.csv'
+projectNameLimit = 25

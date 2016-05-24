@@ -2,3 +2,4 @@
 	- Save archive/reactivation dates in data file
 
 - Be able to close an archived project without first reactivating it
+	- Fix close project dialogs faulty pre selection

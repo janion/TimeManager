@@ -1,1 +1,2 @@
 - Factor project logic into smaller classes (while avoiding infinite call loops!)
+	- ProjectLogic will still exist as an API to the various objects

@@ -10,7 +10,6 @@ import wx
 class BackdateDlg(wx.Dialog):
     def __init__(self, parent, idd, logic, projectName):
         wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
-        self.parent = parent
         self.panel = wx.Panel(self, -1)
         
         self.logic = logic
@@ -80,7 +79,6 @@ class BackdateDlg(wx.Dialog):
                                        'Success', wx.OK
                                        )
                 dlg.ShowModal()
-                self.parent.showProjectInfoInTable(name)
                 
             elif result == self.logic.BackdateType.HAS_ENTRY:
                 prevHours = self.logic.getHoursOnDate(name, dateArray)
@@ -101,7 +99,6 @@ class BackdateDlg(wx.Dialog):
                 result = dlg.ShowModal()
                 if result == wx.ID_YES:
                     self.logic.insertBackdate(name, date, workTime)
-                    self.parent.showProjectInfoInTable(name)
                     
             elif result == self.logic.BackdateType.SPILL_OVER:
                 prevHours = self.logic.getHoursOnDate(name, dateArray)

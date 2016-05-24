@@ -97,11 +97,17 @@ class ProjectLogic():
         
 ################################################################################
         
-    def deleteProject(self, name):
-        #Delete file
-        os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, name, Constants.fileEnd))
-        #Remove from list of projects
-        self._projects.remove(self._getProjectFromName(name))
+    def deleteProject(self, projectName):
+        if not self.isArchive(projectName):
+            #Delete file
+            os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, projectName, Constants.fileEnd))
+            #Remove from list of projects
+            self._projects.remove(self._getProjectFromName(projectName))
+        else:
+            #Delete file
+            os.remove('%s%s%s%s' %(Constants.archiveLocation, Constants.fileStart, projectName, Constants.fileEnd))
+            #Remove from list of archives
+            self._archives.remove(self._getProjectFromName(projectName))
         
 ################################################################################
         

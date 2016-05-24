@@ -11,7 +11,6 @@ import time
 class WorkSessionDlg(wx.Dialog):
     def __init__(self, parent, idd, logic, projectName):        
         wx.Dialog.__init__(self, parent, idd, 'Work session', size=(250, 140))
-        self.parent = parent
         self.panel = wx.Panel(self, -1)
         
         self.logic = logic
@@ -67,10 +66,6 @@ class WorkSessionDlg(wx.Dialog):
         
         workHours = round((self.end_time - self.start_time) / 3600., 2)
         self.logic.recordSession(name, workHours)
-                    
-        #Update list ctrl in main window
-        if self.end_time != self.start_time:
-            self.parent.showProjectInfoInTable(name)
 
 ################################################################################
 

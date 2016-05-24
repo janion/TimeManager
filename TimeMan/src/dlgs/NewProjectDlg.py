@@ -11,7 +11,6 @@ class NewProjectDlg(wx.Dialog):
     
     def __init__(self, parent, idd, logic):
         wx.Dialog.__init__(self, parent, idd, 'New Project', size=(250, 170))
-        self.parent = parent
         self.panel = wx.Panel(self, -1)
         
         self.logic = logic
@@ -126,8 +125,6 @@ class NewProjectDlg(wx.Dialog):
             dateArray = [date.GetDay(), date.GetMonth() + 1, date.GetYear()]
             
             self.logic.createNewProjectFile(name, dateArray, work_time)
-            #Add to list ctrl on main window
-            self.parent.showProjectInfoInTable(name)
             self.Destroy()
         else:
             #Tell user to enter another name

@@ -1,5 +1,6 @@
 - Make duration field in table not include archive times?
 	- Save archive/reactivation dates in data file
 
-- Be able to close an archived project without first reactivating it
-	- Fix close project dialogs faulty pre selection
+- Make reactivation dialog pre select the correct project
+
+- Make dialogs update the main window with some sort of callback

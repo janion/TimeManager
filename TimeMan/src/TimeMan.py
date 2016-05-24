@@ -37,8 +37,6 @@ from processing.ProjectLogic import ProjectLogic as Logic
 
 class Window(wx.Frame):
     
-    showArchive = False
-    
     def __init__(self, parent, idd, title):
         wx.Frame.__init__(self, parent, idd, title, size=(495, 350))
         self.panel = wx.Panel(self, -1)
@@ -164,6 +162,8 @@ class Window(wx.Frame):
         
         dlg = BackdateDlg(self, -1, self.logic, projectName)
         dlg.ShowModal()
+        dlg.Destroy()
+        self.resetTable()
         
 ################################################################################
         
@@ -182,10 +182,10 @@ class Window(wx.Frame):
     
     def closeProject(self, event): #Remove a project from the program
         index = self.proj_list.GetFirstSelected()
-        projectNames = self.logic.getProjectNames()
+        projectNames = self.logic.getProjectNames(self.logic.getShowArchive())
         
         if index != -1:
-            projectName = self.proj_list.GetItemText(index)
+            projectName = self.proj_list.GetItemText(index).strip("*")
         else:
             projectName = ""
         
@@ -208,7 +208,7 @@ class Window(wx.Frame):
             if dlg2.ShowModal() == wx.ID_YES:
                 self.logic.deleteProject(name)
                 #Remove from listctrl
-                self.proj_list.DeleteItem(self.proj_list.FindItem(-1, name))
+                self.resetTable()
                 #Confirm to user successful deletion
                 dlg3 = wx.MessageDialog(dlg2, 'Successfully deleted: %s'
                                         %name, 'Project deleted', wx.OK
@@ -350,6 +350,7 @@ class Window(wx.Frame):
         dlg = NewProjectDlg(self, -1, self.logic)
         dlg.ShowModal()
         dlg.Destroy()
+        self.resetTable()
         
 ################################################################################
         
@@ -385,3 +386,5 @@ class Window(wx.Frame):
         
         dlg = WorkSessionDlg(self, -1, self.logic, projectName)
         dlg.ShowModal()
+        dlg.Destroy()
+        self.resetTable()

@@ -73,20 +73,9 @@ class Test(unittest.TestCase):
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
-        origLocation = Constants.fileLocation
-        Constants.fileLocation = 'testShouldIdentifyValidUniqueBackdate\\'
-        os.mkdir(Constants.fileLocation)
-        shutil.copy("%s%s%s%s" %(origLocation, Constants.fileStart, projName, Constants.fileEnd),
-                    "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
-                    )
          
         result = projectLogic.getBackdateType(projName, [1, 2, 2015], 1)
-        
         self.assertEquals(result, ProjectLogic.BackdateType.UNIQUE)
-        
-        os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
-        os.removedirs(Constants.fileLocation)
-        Constants.fileLocation = origLocation
             
 ################################################################################
     
@@ -94,20 +83,9 @@ class Test(unittest.TestCase):
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
-        origLocation = Constants.fileLocation
-        Constants.fileLocation = 'testShouldIdentifyValidHasEntryBackdate\\'
-        os.mkdir(Constants.fileLocation)
-        shutil.copy("%s%s%s%s" %(origLocation, Constants.fileStart, projName, Constants.fileEnd),
-                    "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
-                    )
          
         result = projectLogic.getBackdateType(projName, [1, 1, 2013], 1)
-        
         self.assertEquals(result, ProjectLogic.BackdateType.HAS_ENTRY)
-        
-        os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
-        os.removedirs(Constants.fileLocation)
-        Constants.fileLocation = origLocation
             
 ################################################################################
     
@@ -115,20 +93,9 @@ class Test(unittest.TestCase):
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
-        origLocation = Constants.fileLocation
-        Constants.fileLocation = 'testShouldIdentifyInvalidFutureBackdate\\'
-        os.mkdir(Constants.fileLocation)
-        shutil.copy("%s%s%s%s" %(origLocation, Constants.fileStart, projName, Constants.fileEnd),
-                    "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
-                    )
          
         result = projectLogic.getBackdateType(projName, [1, 2, 3015], 1)
-        
         self.assertEquals(result, ProjectLogic.BackdateType.FUTURE)
-        
-        os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
-        os.removedirs(Constants.fileLocation)
-        Constants.fileLocation = origLocation
             
 ################################################################################
     
@@ -136,46 +103,32 @@ class Test(unittest.TestCase):
         
         projName = self.testDataFiles[2]
         projectLogic = ProjectLogic()
-        origLocation = Constants.fileLocation
-        Constants.fileLocation = 'testShouldIdentifyInvalidSpillOverBackdate\\'
-        os.mkdir(Constants.fileLocation)
-        shutil.copy("%s%s%s%s" %(origLocation, Constants.fileStart, projName, Constants.fileEnd),
-                    "%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd)
-                    )
          
         result = projectLogic.getBackdateType(projName, [1, 1, 2013], 23.99)
-        
         self.assertEquals(result, ProjectLogic.BackdateType.SPILL_OVER)
-        
-        os.remove("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart, projName, Constants.fileEnd))
-        os.removedirs(Constants.fileLocation)
-        Constants.fileLocation = origLocation
             
 ################################################################################
     
     def testShouldCreateProjectFile(self):
          
-        origLocation = Constants.fileLocation
-        Constants.fileLocation = 'testShouldCreateProjectFile\\'
-        os.mkdir(Constants.fileLocation)
+        testName = "shouldCreateFile"
         projectLogic = ProjectLogic()
  
-        for x in xrange(len(self.testDataFiles)):
-            projectLogic.createNewProjectFile(self.testDataFiles[x], [1, 1, 2001], 5.55)
-            self.assertEquals(self.testDataFiles[0:x+1], projectLogic.getProjectNames())
+        projectLogic.createNewProjectFile(testName, [1, 1, 2001], 5.55)
+        self.assertEquals(self.testDataFiles + [testName], projectLogic.getProjectNames())
+     
+        self.assertTrue(os.path.exists("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                        )
+        (days, mnths, yrs, hrs, cumulative, logged) = projectLogic.getProjectData(testName)
+        self.assertEquals(days, [1])
+        self.assertEquals(mnths, [1])
+        self.assertEquals(yrs, [2001])
+        self.assertEquals(hrs, [5.55])
+        self.assertEquals(cumulative, [5.55])
+        self.assertEquals(logged, [0])
          
-            (days, mnths, yrs, hrs, cumulative, logged) = projectLogic.getProjectData(self.testDataFiles[x])
-            self.assertEquals(days, [1])
-            self.assertEquals(mnths, [1])
-            self.assertEquals(yrs, [2001])
-            self.assertEquals(hrs, [5.55])
-            self.assertEquals(cumulative, [5.55])
-            self.assertEquals(logged, [0])
-         
-        for item in os.listdir(Constants.fileLocation):
-            os.remove('%s%s' %(Constants.fileLocation, item))
-        os.removedirs(Constants.fileLocation)
-        Constants.fileLocation = origLocation
+        os.remove('%s%s%s%s' %(Constants.fileLocation, Constants.fileStart, testName, Constants.fileEnd))
             
 ################################################################################
     
@@ -239,6 +192,41 @@ class Test(unittest.TestCase):
     def testShouldIdentifyAvailableProjectName(self):
         projectLogic = ProjectLogic()
         self.assertTrue(projectLogic.isUniqueProjectName("test400"))
+            
+################################################################################
+    
+    def testShouldCloseProjectAndDeleteFile(self):
+        projectLogic = ProjectLogic()
+        testName = "shouldDeleteFile"
+        projectLogic.createNewProjectFile(testName, [1, 1, 2001], 1.01)
+        self.assertTrue(os.path.exists("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                            )
+        
+        projectLogic.deleteProject(testName)
+        self.assertFalse(os.path.exists("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                            )
+            
+################################################################################
+    
+    def testShouldCloseArchivedProject(self):
+        projectLogic = ProjectLogic()
+        testName = "shouldCloseArchive"
+        projectLogic.createNewProjectFile(testName, [1, 1, 2001], 1.01)
+        self.assertTrue(os.path.exists("%s%s%s%s" %(Constants.fileLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                            )
+        
+        projectLogic.archiveProject(testName)
+        self.assertTrue(os.path.exists("%s%s%s%s" %(Constants.archiveLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                            )
+        
+        projectLogic.deleteProject(testName)
+        self.assertFalse(os.path.exists("%s%s%s%s" %(Constants.archiveLocation, Constants.fileStart,
+                                                    testName, Constants.fileEnd))
+                            )
             
 ################################################################################
 

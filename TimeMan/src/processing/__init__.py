@@ -5,4 +5,4 @@ Created on Tue Jul 28 12:46:21 2015
 @author: Janion
 """
 
-__all__ = ["Logic", "ProjectInfo"]
+from .ProjectLogic import ProjectLogic

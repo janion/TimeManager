@@ -25,12 +25,8 @@ charts with amounts done per day
 
 import wx
 
-from dlgs.NewProjectDlg import NewProjectDlg
-from dlgs.DataDlg import DataWindow
-from dlgs.WorkSessionDlg import WorkSessionDlg
-from dlgs.BackdateDlg import BackdateDlg
-from dlgs.ClaimedHoursDlg import ClaimedHoursDlg
-from processing.ProjectLogic import ProjectLogic as Logic
+from dlgs import *
+from processing import ProjectLogic as Logic
 
 ################################################################################
 ################################################################################

@@ -9,9 +9,10 @@ import wx
 import time
 
 class WorkSessionDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic, projectName):        
+    def __init__(self, parent, idd, logic, projectName, callback):        
         wx.Dialog.__init__(self, parent, idd, 'Work session', size=(250, 140))
         self.panel = wx.Panel(self, -1)
+        self.callback = callback
         
         self.logic = logic
         
@@ -66,6 +67,7 @@ class WorkSessionDlg(wx.Dialog):
         
         workHours = round((self.end_time - self.start_time) / 3600., 2)
         self.logic.recordSession(name, workHours)
+        self.callback(name)
 
 ################################################################################
 

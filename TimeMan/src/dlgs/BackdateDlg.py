@@ -8,9 +8,10 @@ Created on Mon Sep 21 14:59:28 2015
 import wx
 
 class BackdateDlg(wx.Dialog):
-    def __init__(self, parent, idd, logic, projectName):
+    def __init__(self, parent, idd, logic, projectName, callback):
         wx.Dialog.__init__(self, parent, idd, 'Back date project', size=(250, 170))
         self.panel = wx.Panel(self, -1)
+        self.callback = callback
         
         self.logic = logic
         
@@ -75,6 +76,7 @@ class BackdateDlg(wx.Dialog):
     
             if result == self.logic.BackdateType.UNIQUE:
                 self.logic.insertBackdate(name, dateArray, workTime)
+                self.callback(name)
                 dlg = wx.MessageDialog(self, 'Successfully backdated',
                                        'Success', wx.OK
                                        )

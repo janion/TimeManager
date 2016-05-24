@@ -160,7 +160,7 @@ class Window(wx.Frame):
         else:
             projectName = ""
         
-        dlg = BackdateDlg(self, -1, self.logic, projectName)
+        dlg = BackdateDlg(self, -1, self.logic, projectName, self.showProjectInfoInTable)
         dlg.ShowModal()
         dlg.Destroy()
         self.resetTable()
@@ -384,7 +384,7 @@ class Window(wx.Frame):
         else:
             projectName = ""
         
-        dlg = WorkSessionDlg(self, -1, self.logic, projectName)
+        dlg = WorkSessionDlg(self, -1, self.logic, projectName, self.showProjectInfoInTable)
         dlg.ShowModal()
         dlg.Destroy()
         self.resetTable()

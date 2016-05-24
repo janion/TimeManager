@@ -1,8 +1,3 @@
-- Make duration field in table not include archive times?
-	- Save archive/reactivation dates in data file
-
-- Make reactivation dialog pre select the correct project
-
 - Make dialogs update the main window with some sort of callback
 
 - Factor project logic into smaller classes (while avoiding infinite call loops!)

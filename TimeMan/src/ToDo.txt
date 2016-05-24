@@ -1,14 +1,4 @@
 - Make duration field in table not include archive times?
 	- Save archive/reactivation dates in data file
-	
-- Reform create project dialog
-	+ When creating a new project only allow characters valid in a field name
-	+ Add maximum character count
-	+ Turn date red if future in new project
-	+ Move all logic to logic class
-	- Test new logic - valid/unique project names
-
-- Change date picker in backdater to date picker not generic
-	- Turn date red if future in backdate
 
 - Be able to close an archived project without first reactivating it

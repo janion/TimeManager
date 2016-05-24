@@ -276,7 +276,7 @@ class Window(wx.Frame):
         projectNames = self.logic.getArchivedProjectNames()
         
         if index != -1:
-            projectName = self.proj_list.GetItemText(index)
+            projectName = self.proj_list.GetItemText(index).strip("*")
         else:
             projectName = ""
             

@@ -7,7 +7,6 @@ Created on 9 Apr 2016
 import os
 import shutil
 import datetime as dt
-import string
 import Constants
 from Project import Project
 from ProjectInfo import ProjectInfo
@@ -19,13 +18,8 @@ class ProjectLogic():
         HAS_ENTRY = 1
         SPILL_OVER = 2
         FUTURE = 3
-    
-    __validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    __charLimit = 25
         
-    _projects = []
-    _archives = []
-    _showArchive = False;
+################################################################################
 
     def __init__(self):
         # Create data folder if it doesn't exist
@@ -36,6 +30,7 @@ class ProjectLogic():
         if not os.path.exists(Constants.archiveLocation):
             os.makedirs(Constants.archiveLocation)
             
+        self._showArchive = False;
         self._projects = []
         self._findProjects(Constants.fileLocation, self._projects, False)
         self._archives = []
@@ -43,6 +38,7 @@ class ProjectLogic():
         
 ################################################################################
     
+    """ProjectBank"""
     def _getProjectFromName(self, name):
         # Look for project
         for project in self._projects:
@@ -58,6 +54,7 @@ class ProjectLogic():
         
 ################################################################################
     
+    """ProjectBank"""
     def getProjectNames(self, includeArchive = False): #Find all projects in home folder
         if len(self._projects) == 0:
             self._findProjects(Constants.fileLocation, self._projects, False)
@@ -74,6 +71,7 @@ class ProjectLogic():
         
 ################################################################################
     
+    """ProjectBank"""
     def getArchivedProjectNames(self): #Find all projects in home folder
         if len(self._projects) == 0:
             self._findProjects(Constants.fileLocation, self._projects, False)
@@ -87,6 +85,7 @@ class ProjectLogic():
         
 ################################################################################
     
+    """ProjectBank"""
     def _findProjects(self, directory, ProjectList, isArchive): #Find all projects in home folder
         #Create list
         for item in os.listdir(os.getcwd() + "\\" + directory):
@@ -111,12 +110,14 @@ class ProjectLogic():
         
 ################################################################################
         
+    """ProjectBank"""
     def getProjectInfo(self, name):
         project = self._getProjectFromName(name)
         return ProjectInfo(project.getTotalTime(), project.getThisWeek(), project.getProjectStart(), project.getTotalDays())
 
 ################################################################################
     
+    """ProjectBank"""
     def getProjectData(self, name):
         project = self._getProjectFromName(name)
         return project.getData()
@@ -155,6 +156,7 @@ class ProjectLogic():
     
 ################################################################################
 
+    """ProjectBank"""
     def getBackdateType(self, name, date, workTime):
         #Find today's date
         today = dt.date.today().strftime("%d-%m-%Y").split('-')
@@ -175,6 +177,7 @@ class ProjectLogic():
             
 ################################################################################
 
+    """Validator"""
     def isDateValid(self, date):
             #Get today's date
             today = dt.date.today().strftime("%d-%m-%Y").split('-')
@@ -192,20 +195,23 @@ class ProjectLogic():
             
 ################################################################################
 
+    """Validator"""
     def isValidProjectName(self, name):
         for character in name:
-            if character not in self.__validFilenameChars:
+            if character not in Constants.validFilenameChars:
                 return False
         
         return True
             
 ################################################################################
 
+    """ProjectBank"""
     def isUniqueProjectName(self, name):
         return name not in self.getProjectNames(True)
             
 ################################################################################
 
+    """ProjectBank"""
     def getHoursOnDate(self, name, date):
         project = self._getProjectFromName(name)
         return project.getHoursOnDate(date)
@@ -304,6 +310,7 @@ class ProjectLogic():
             
 ################################################################################
 
+    """Validator"""
     def getProjectNameLimit(self):
         return Constants.projectNameLimit
             

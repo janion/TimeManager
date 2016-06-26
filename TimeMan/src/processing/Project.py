@@ -9,18 +9,6 @@ import datetime as dt
 import Constants
 
 class Project(object):
-    
-    name = None
-    projStart = None
-    days = None
-    months = None
-    years = None
-    hours = None
-    cumulative = None
-    logged = None
-    totalHours = None
-    thisWeek = None
-    totalDays = None
 
     def __init__(self, name, data = None, isArchive = False):
         self.name = name

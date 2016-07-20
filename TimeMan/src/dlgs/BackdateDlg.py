@@ -100,7 +100,7 @@ class BackdateDlg(wx.Dialog):
                                        )
                 result = dlg.ShowModal()
                 if result == wx.ID_YES:
-                    self.logic.insertBackdate(name, date, workTime)
+                    self.logic.insertBackdate(name, dateArray, workTime)
                     
             elif result == self.logic.BackdateType.SPILL_OVER:
                 prevHours = self.logic.getHoursOnDate(name, dateArray)

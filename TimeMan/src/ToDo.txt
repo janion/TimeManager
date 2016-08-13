@@ -3,3 +3,4 @@
 - Remove configs and has graphs option in setup.py
 
 - Save copy of file before wiping and rewriting
+- Dedicated files object
